@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+font-family: 'Plus Jakarta Sans', sans-serif;
+background-color: #f8fafc; /* Latar belakang abu-abu sangat muda */
+color: #334155;
+}
+
+/* Custom Sidebar Layout - Modern & Glassy */
+.sidebar-nav {
+width: 280px;
+background: linear-gradient(180deg, #1e1e2d 0%, #3b247a 100%);
+min-height: 100vh;
+box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+z-index: 100;
+}
+
+.sidebar a {
+color: #cbd5e1;
+text-decoration: none;
+padding: 14px 20px;
+display: flex;
+align-items: center;
+border-radius: 12px;
+margin-bottom: 8px;
+font-weight: 500;
+transition: all 0.3s ease;
+}
+
+.sidebar a:hover {
+background: rgba(255, 255, 255, 0.1);
+color: #fff;
+transform: translateX(5px);
+}
+
+.sidebar a.active {
+background: linear-gradient(135deg, #6038c6 0%, #4338ca 100%);
+color: #fff;
+box-shadow: 0 4px 15px rgba(96, 56, 198, 0.3);
+}
+
+/* Offcanvas Mobile Sidebar */
+.offcanvas-start {
+background: linear-gradient(180deg, #1e1e2d 0%, #3b247a 100%) !important;
+}
+
+.main-content {
+min-height: 100vh;
+background-color: #f8fafc;
+background-image:
+radial-gradient(circle at 15% 50%, rgba(96, 56, 198, 0.03), transparent 25%),
+radial-gradient(circle at 85% 30%, rgba(0, 212, 255, 0.03), transparent 25%);
+}
+
+/* Modern Cards */
+.card {
+background: #ffffff;
+border: 1px solid rgba(226, 232, 240, 0.8) !important;
+border-radius: 20px !important;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02) !important;
+transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+box-shadow: 0 15px 35px rgba(0, 0, 0, 0.04) !important;
+transform: translateY(-2px);
+}
+
+/* Formulir Elegan */
+.form-control, .form-select {
+border: 1px solid #e2e8f0;
+border-radius: 12px;
+padding: 12px 16px;
+background-color: #f8fafc;
+color: #334155;
+transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+background-color: #fff;
+border-color: #6038c6;
+box-shadow: 0 0 0 4px rgba(96, 56, 198, 0.1);
+}
+
+/* Tabel Elegan */
+.table-responsive {
+border-radius: 16px;
+overflow: hidden;
+}
+
+.table {
+margin-bottom: 0;
+}
+
+.table > :not(caption) > * > * {
+padding: 1rem 1.5rem;
+border-bottom-color: #f1f5f9;
+}
+
+.table-light {
+background-color: #f1f5f9;
+}
+
+.table-light th {
+color: #475569;
+font-weight: 600;
+text-transform: uppercase;
+font-size: 0.8rem;
+letter-spacing: 0.5px;
+border-bottom: none;
+}
+
+.table-hover tbody tr:hover {
+background-color: #f8fafc;
+}
+
+/* Badge & Buttons */
+.badge {
+padding: 0.5em 0.8em;
+border-radius: 8px;
+font-weight: 500;
+}
+
+.btn {
+border-radius: 12px;
+padding: 10px 20px;
+font-weight: 600;
+transition: all 0.3s ease;
+}
+
+.btn-primary {
+background: linear-gradient(135deg, #6038c6 0%, #4338ca 100%);
+border: none;
+box-shadow: 0 4px 15px rgba(96, 56, 198, 0.2);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+background: linear-gradient(135deg, #4338ca 0%, #312e81 100%);
+box-shadow: 0 6px 20px rgba(96, 56, 198, 0.3);
+transform: translateY(-1px);
+}
+
+.btn-warning {
+background: #f59e0b;
+border: none;
+color: white;
+}
+
+.btn-danger {
+background: #ef4444;
+border: none;
+}
+
+.btn-sm {
+padding: 6px 12px;
+border-radius: 8px;
+font-size: 0.875rem;
+}
+
+/* Generate RPP Card Special Style */
+.generate-card {
+background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+border: 2px dashed #cbd5e1 !important;
+}
+
+/* Modal Styling */
+.modal-content {
+border-radius: 24px;
+border: none;
+overflow: hidden;
+}
+.modal-header {
+border-bottom: 1px solid #f1f5f9;
+background-color: #f8fafc;
+}
+.modal-footer {
+border-top: 1px solid #f1f5f9;
+}
+
+/* Editor RPP Styles */
+#editor {
+min-height: 297mm;
+background: white;
+padding: 2rem;
+box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+outline: none;
+border-radius: 8px;
+}
+.float-menu {
+position: absolute;
+display: none;
+background: rgba(30, 41, 59, 0.95);
+backdrop-filter: blur(8px);
+border-radius: 12px;
+padding: 8px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+z-index: 1000;
+border: 1px solid rgba(255,255,255,0.1);
+}
+.float-menu button {
+background: transparent;
+border: none;
+color: #e2e8f0;
+padding: 8px 12px;
+font-size: 13px;
+cursor: pointer;
+font-weight: 500;
+}
+.float-menu button:hover {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 8px;
+color: white;
+}
+
+@media print {
+.no-print { display: none !important; }
+body { background: white !important; }
+#editor { box-shadow: none; padding: 0; border-radius: 0; }
+}
