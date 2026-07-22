@@ -542,6 +542,11 @@ function getMyClasses($pdo, $guru_id) {
                                 <h6 class="fw-bold mb-1">Privasi & Kuota API</h6>
                                 <p class="mb-0 small text-dark">Sistem ini dapat menggunakan kunci API (API Key) Anda sendiri dari berbagai provider agar generasi RPP lebih cepat dan tidak berebut kuota limit dengan pengguna lain.</p>
                             </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Pilihan Token API Groq</h6>
+                                <p class="mb-0 small text-dark">Gunakan Token Di Bawah dan masukkan ke dalam inputan API Token jika terjadi masalah pada token default</p>
+                                <p>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</p>
+                            </div>
                         </div>
 
                         <form method="POST" id="apiForm">
