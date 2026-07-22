@@ -542,7 +542,6 @@ function getMyClasses($pdo, $guru_id) {
                                 <h6 class="fw-bold mb-1">Privasi & Kuota API</h6>
                                 <p class="mb-0 small text-dark">Sistem ini dapat menggunakan kunci API (API Key) Anda sendiri dari berbagai provider agar generasi RPP lebih cepat dan tidak berebut kuota limit dengan pengguna lain.</p>
                             </div>
-                                
                         </div>
 
                         <form method="POST" id="apiForm">
