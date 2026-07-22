@@ -541,12 +541,6 @@ function getMyClasses($pdo, $guru_id) {
                             <div>
                                 <h6 class="fw-bold mb-1">Privasi & Kuota API</h6>
                                 <p class="mb-0 small text-dark">Sistem ini dapat menggunakan kunci API (API Key) Anda sendiri dari berbagai provider agar generasi RPP lebih cepat dan tidak berebut kuota limit dengan pengguna lain.</p>
-
-                                <br>
-
-                                <h6 class="fw-bold mb-1">Pilihan Token API Groq</h6>
-                                <p class="mb-0 small text-dark">Gunakan Token yang ada di Link G-drive Di Bawah dan masukkan ke dalam inputan API jika terjadi masalah pada token</p>
-                                <a href="https://docs.google.com/document/d/1BEtFMhwNXoszQs4MBmJWwYfyc89G-3WAPC7tvCQk6ss/edit?usp=sharing" target="_blank">File G-Drive</a>
                             </div>
                                 
                         </div>
