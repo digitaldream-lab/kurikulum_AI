@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body class="bg-light">
 
     <!-- Navbar Mobile -->
-    <nav class="navbar navbar-dark d-md-none px-3 sticky-top" style="background: linear-gradient(135deg, #1e1e2d 0%, #3b247a 100%);">
+    <nav class="navbar navbar-dark d-md-none px-3 sticky-top " style="background: linear-gradient(135deg, #1e1e2d 0%, #3b247a 100%); width:100% ">
         <span class="navbar-brand mb-0 h1 fw-bold text-white d-flex align-items-center"><i class="bi bi-shield-lock-fill me-2 text-info"></i> Super Admin</span>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
             <span class="navbar-toggler-icon"></span>
@@ -245,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <?php if ($page === 'guru'): ?>
                 <!-- Form Guru -->
-                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4">
+                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4 w-100">
                     <div class="card-body p-4">
                         <h5 class="mb-3 text-primary fw-bold">Daftarkan Guru Baru</h5>
                         <form method="POST" class="row g-3">
@@ -492,7 +492,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <?php elseif ($page === '4c'): ?>
                 <!-- Form Tambah 4C -->
-                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4">
+                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4 w-100">
                     <div class="card-body p-4">
                         <h5 class="mb-3 text-primary fw-bold">Tambah Indikator 4C</h5>
                         <form method="POST" class="row g-3">
@@ -517,7 +517,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
                 <!-- Tabel 4C -->
-                <div class="card shadow-sm border-0 col-12 col-xl-9 rounded-4">
+                <div class="card shadow-sm border-0 col-12 col-xl-9 rounded-4 w-100">
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0 align-middle">
@@ -592,7 +592,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
             <?php elseif ($page === 'auth'): ?>
-                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4">
+                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4 w-100">
                     <div class="card-body p-3 p-md-4">
                         <form method="POST">
                             <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">Verifikasi Akun Lama</h5>

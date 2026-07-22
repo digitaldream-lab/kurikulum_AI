@@ -262,7 +262,7 @@ function getMyClasses($pdo, $guru_id) {
             <!-- KONTEN HALAMAN -->
             <?php if ($page === 'kelas'): ?>
                 <div class="row g-4">
-                    <div class="col-12 col-xl-4">
+                    <div class="col-12 col-xl-4 w-100">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-body p-4">
                                 <h5 class="mb-3 text-primary fw-bold">Tambah Kelas Baru</h5>
@@ -284,7 +284,7 @@ function getMyClasses($pdo, $guru_id) {
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-xl-8">
+                    <div class="col-12 col-xl-8 w-100">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-body p-0">
                                 <div class="table-responsive">
@@ -534,7 +534,7 @@ function getMyClasses($pdo, $guru_id) {
                 $currentProvider = $userApi['api_provider'] ?? 'groq';
                 $currentToken = $userApi['api_token'] ?? '';
                 ?>
-                <div class="card mb-4 shadow-sm border-0 col-12 col-xl-9 rounded-4">
+                <div class="card mb-4 shadow-sm border-0 col-12 col-xl-9 rounded-4 w-100">
                     <div class="card-body p-4 p-md-5">
                         <div class="alert alert-info mb-4 border-0 bg-info bg-opacity-10 d-flex align-items-center rounded-3">
                             <i class="bi bi-info-circle-fill fs-3 me-3 text-info"></i>
@@ -601,7 +601,7 @@ function getMyClasses($pdo, $guru_id) {
                 </script>
 
             <?php elseif ($page === 'auth'): ?>
-                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4">
+                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4 w-100">
                     <div class="card-body p-4 p-md-5">
                         <form method="POST">
                             <h5 class="mb-4 text-primary fw-bold border-bottom pb-2">Verifikasi Akun Lama</h5>
