@@ -545,7 +545,7 @@ function getMyClasses($pdo, $guru_id) {
                                 <br>
 
                                 <h6 class="fw-bold mb-1">Pilihan Token API Groq</h6>
-                                <p class="mb-0 small text-dark">Gunakan Token yang ada di Link G-drive Di Bawah dan masukkan ke dalam inputan API Token jika terjadi masalah pada token default</p>
+                                <p class="mb-0 small text-dark">Gunakan Token yang ada di Link G-drive Di Bawah dan masukkan ke dalam inputan API jika terjadi masalah pada token default</p>
                                 <a href="https://docs.google.com/document/d/1BEtFMhwNXoszQs4MBmJWwYfyc89G-3WAPC7tvCQk6ss/edit?usp=sharing" target="_blank">File G-Drive</a>
                             </div>
                                 
