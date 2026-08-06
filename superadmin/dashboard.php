@@ -24,37 +24,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->execute([$_POST['name'], $_POST['username'], $_POST['password'], $_POST['id']]);
         $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Data Guru berhasil diubah!'];
     }
-    if (isset($_POST['delete_guru'])) { // MENGGUNAKAN INPUT HIDDEN UNTUK DETEKSI DELETE
+    if (isset($_POST['delete_guru'])) {
         $guru_to_delete = $_POST['id'];
-        
         try {
             $pdo->beginTransaction();
-
-            // 1. Hapus RPP yang disimpan guru ini
-            $stmt = $pdo->prepare("DELETE FROM saved_rpps WHERE guru_id = ?");
-            $stmt->execute([$guru_to_delete]);
-
-            // 2. Hapus materi yang terkait dengan mapel dari kelas guru ini
-            $stmt = $pdo->prepare("DELETE materials FROM materials 
-                                   JOIN subjects ON materials.subject_id = subjects.id 
-                                   JOIN classes ON subjects.class_id = classes.id 
-                                   WHERE classes.guru_id = ?");
-            $stmt->execute([$guru_to_delete]);
-
-            // 3. Hapus mapel yang terkait dengan kelas guru ini
-            $stmt = $pdo->prepare("DELETE subjects FROM subjects 
-                                   JOIN classes ON subjects.class_id = classes.id 
-                                   WHERE classes.guru_id = ?");
-            $stmt->execute([$guru_to_delete]);
-
-            // 4. Hapus kelas milik guru ini
-            $stmt = $pdo->prepare("DELETE FROM classes WHERE guru_id = ?");
-            $stmt->execute([$guru_to_delete]);
-
-            // 5. Terakhir, hapus akun gurunya
-            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ? AND role = 'guru'");
-            $stmt->execute([$guru_to_delete]);
-
+            $stmt = $pdo->prepare("DELETE FROM saved_rpps WHERE guru_id = ?"); $stmt->execute([$guru_to_delete]);
+            $stmt = $pdo->prepare("DELETE materials FROM materials JOIN subjects ON materials.subject_id = subjects.id JOIN classes ON subjects.class_id = classes.id WHERE classes.guru_id = ?"); $stmt->execute([$guru_to_delete]);
+            $stmt = $pdo->prepare("DELETE subjects FROM subjects JOIN classes ON subjects.class_id = classes.id WHERE classes.guru_id = ?"); $stmt->execute([$guru_to_delete]);
+            $stmt = $pdo->prepare("DELETE FROM classes WHERE guru_id = ?"); $stmt->execute([$guru_to_delete]);
+            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ? AND role = 'guru'"); $stmt->execute([$guru_to_delete]);
             $pdo->commit();
             $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Akun Guru dan seluruh data terkait berhasil dihapus!'];
         } catch (Exception $e) {
@@ -117,6 +95,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Indikator 4C berhasil dihapus!'];
     }
 
+    // --- MANAJEMEN KOGNITIF C1-C6 ---
+    if (isset($_POST['add_kognitif'])) {
+        $stmt = $pdo->prepare("INSERT INTO kognitif_c1_c6 (level, name, description) VALUES (?, ?, ?)");
+        $stmt->execute([$_POST['level'], $_POST['name'], $_POST['description']]);
+        $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Level Kognitif berhasil ditambahkan!'];
+    }
+    if (isset($_POST['edit_kognitif'])) {
+        $stmt = $pdo->prepare("UPDATE kognitif_c1_c6 SET level = ?, name = ?, description = ? WHERE id = ?");
+        $stmt->execute([$_POST['level'], $_POST['name'], $_POST['description'], $_POST['id']]);
+        $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Data Kognitif berhasil diubah!'];
+    }
+    if (isset($_POST['delete_kognitif'])) {
+        $stmt = $pdo->prepare("DELETE FROM kognitif_c1_c6 WHERE id = ?");
+        $stmt->execute([$_POST['id']]);
+        $_SESSION['flash_msg'] = ['type' => 'success', 'text' => 'Data Kognitif berhasil dihapus!'];
+    }
+
     // --- 4. AUTENTIKASI SUPERADMIN ---
     if (isset($_POST['update_auth'])) {
         $old_username = $_POST['old_username'];
@@ -147,15 +142,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin - Dashboard AI RPP</title>
-    <!-- Font Plus Jakarta Sans -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../style/style.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .dalil-img-preview { width: 50px; height: 50px; object-fit: cover; border-radius: 12px; border: 2px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
         @media (max-width: 768px) {
             .sidebar-desktop { display: none !important; }
@@ -163,10 +155,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
-    <!-- Navbar Mobile -->
-    <nav class="navbar navbar-dark d-md-none px-3 sticky-top " style="background: linear-gradient(135deg, #1e1e2d 0%, #3b247a 100%); width:100% ">
+    <!-- Navbar Mobile (w-100 ditambahkan agar full width) -->
+    <nav class="navbar navbar-dark d-md-none px-3 sticky-top w-100 shadow-sm" style="background: linear-gradient(135deg, #1e1e2d 0%, #3b247a 100%);">
         <span class="navbar-brand mb-0 h1 fw-bold text-white d-flex align-items-center"><i class="bi bi-shield-lock-fill me-2 text-info"></i> Super Admin</span>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
             <span class="navbar-toggler-icon"></span>
@@ -181,6 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <div class="offcanvas-body d-flex flex-column p-3 sidebar">
             <a href="?page=guru" class="<?= $page=='guru'?'active':'' ?>"><i class="bi bi-people-fill me-3 fs-5"></i> Manajemen Guru</a>
+            <a href="?page=kognitif" class="<?= $page=='kognitif'?'active':'' ?>"><i class="bi bi-bar-chart-steps me-3 fs-5"></i> Kognitif C1-C6</a>
             <a href="?page=4c" class="<?= $page=='4c'?'active':'' ?>"><i class="bi bi-puzzle-fill me-3 fs-5"></i> Manajemen 4C</a>
             <a href="?page=dalil" class="<?= $page=='dalil'?'active':'' ?>"><i class="bi bi-book-half me-3 fs-5"></i> Manajemen Dalil</a>
             <a href="?page=auth" class="<?= $page=='auth'?'active':'' ?>"><i class="bi bi-shield-lock-fill me-3 fs-5"></i> Keamanan Akun</a>
@@ -205,6 +198,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             
             <div class="d-flex flex-column flex-grow-1 mt-3 gap-1">
                 <a href="?page=guru" class="<?= $page=='guru'?'active':'' ?>"><i class="bi bi-people-fill me-3 fs-5 text-opacity-75 text-white"></i> Data Guru</a>
+                <a href="?page=kognitif" class="<?= $page=='kognitif'?'active':'' ?>"><i class="bi bi-bar-chart-steps me-3 fs-5 text-opacity-75 text-white"></i> Kognitif C1-C6</a>
                 <a href="?page=4c" class="<?= $page=='4c'?'active':'' ?>"><i class="bi bi-puzzle-fill me-3 fs-5 text-opacity-75 text-white"></i> Kriteria 4C</a>
                 <a href="?page=dalil" class="<?= $page=='dalil'?'active':'' ?>"><i class="bi bi-book-half me-3 fs-5 text-opacity-75 text-white"></i> Referensi Dalil</a>
                 <a href="?page=auth" class="<?= $page=='auth'?'active':'' ?>"><i class="bi bi-gear-fill me-3 fs-5 text-opacity-75 text-white"></i> Pengaturan</a>
@@ -215,8 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
 
-        <!-- Main Content -->
-        <!-- Menghilangkan overflow-hidden agar halaman dapat di-scroll saat konten memanjang -->
+        <!-- Main Content (Hapus overflow-hidden agar bisa di scroll) -->
         <div class="main-content flex-grow-1 p-4 p-md-5" style="margin-left: 280px; min-height: 100vh;">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bolder text-dark m-0" style="letter-spacing: -0.5px;">
@@ -235,8 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true
+                            timer: 3000
                         });
                     });
                 </script>
@@ -244,8 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <?php endif; ?>
             
             <?php if ($page === 'guru'): ?>
-                <!-- Form Guru -->
-                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4 w-100">
+                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4">
                     <div class="card-body p-4">
                         <h5 class="mb-3 text-primary fw-bold">Daftarkan Guru Baru</h5>
                         <form method="POST" class="row g-3">
@@ -268,7 +259,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <!-- Tabel Guru -->
                 <div class="card shadow-sm border-0 rounded-4 col-12">
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -290,7 +280,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <td class="text-center">
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editGuru<?= $g['id'] ?>">Edit</button>
-                                                    <!-- Form Hapus (Fixed dengan Hidden Input) -->
                                                     <form method="POST" class="form-hapus-sweet m-0">
                                                         <input type="hidden" name="delete_guru" value="1">
                                                         <input type="hidden" name="id" value="<?= $g['id'] ?>">
@@ -344,7 +333,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             
             <?php elseif ($page === 'dalil'): ?>
-                <!-- Form Tambah Dalil -->
                 <div class="card mb-4 border-0 shadow-sm rounded-4 col-12">
                     <div class="card-body p-3 p-md-4">
                         <h5 class="mb-3 text-primary fw-bold">Tambah Dalil Referensi RPP</h5>
@@ -388,7 +376,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <!-- Tabel Dalil -->
                 <div class="card shadow-sm border-0 rounded-4 col-12">
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -419,7 +406,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <td class="text-center">
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editDalil<?= $d['id'] ?>">Edit</button>
-                                                    <!-- Form Hapus (Fixed dengan Hidden Input) -->
                                                     <form method="POST" class="form-hapus-sweet m-0">
                                                         <input type="hidden" name="delete_dalil" value="1">
                                                         <input type="hidden" name="id" value="<?= $d['id'] ?>">
@@ -490,9 +476,105 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
+            <?php elseif ($page === 'kognitif'): ?>
+                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3 text-primary fw-bold">Tambah Level Kognitif (Taksonomi Bloom)</h5>
+                        <form method="POST" class="row g-3">
+                            <div class="col-12 col-md-3">
+                                <label class="form-label small text-muted mb-1">Level (C1 - C6)</label>
+                                <input type="text" name="level" class="form-control" placeholder="Contoh: C1" required>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <label class="form-label small text-muted mb-1">Nama Taksonomi</label>
+                                <input type="text" name="name" class="form-control" placeholder="Contoh: Mengingat (Remembering)" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small text-muted mb-1">Deskripsi / Kemampuan Siswa</label>
+                                <textarea name="description" class="form-control" rows="2" placeholder="Murid dapat mengingat..." required></textarea>
+                            </div>
+                            <div class="col-12 text-md-end text-center">
+                                <button type="submit" name="add_kognitif" class="btn btn-primary px-4 fw-bold w-100 w-md-auto">Tambah Kognitif</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm border-0 col-12 col-xl-9 rounded-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light"><tr><th class="ps-4">No</th><th>Level</th><th>Nama</th><th style="min-width: 250px;">Deskripsi</th><th class="text-center">Aksi</th></tr></thead>
+                                <tbody>
+                                    <?php 
+                                    $stmt = $pdo->query("SELECT * FROM kognitif_c1_c6 ORDER BY level ASC");
+                                    $kognitifs = $stmt->fetchAll();
+                                    $no = 1;
+                                    if(count($kognitifs) > 0):
+                                        foreach($kognitifs as $kg): 
+                                    ?>
+                                        <tr>
+                                            <td class="ps-4"><?= $no++ ?></td>
+                                            <td><span class="badge bg-primary text-white"><?= htmlspecialchars($kg['level']) ?></span></td>
+                                            <td class="fw-bold"><?= htmlspecialchars($kg['name']) ?></td>
+                                            <td class="small text-wrap"><?= htmlspecialchars($kg['description']) ?></td>
+                                            <td class="text-center">
+                                                <div class="d-flex gap-1 justify-content-center">
+                                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editKognitif<?= $kg['id'] ?>">Edit</button>
+                                                    <form method="POST" class="form-hapus-sweet m-0">
+                                                        <input type="hidden" name="delete_kognitif" value="1">
+                                                        <input type="hidden" name="id" value="<?= $kg['id'] ?>">
+                                                        <button type="submit" class="btn btn-sm btn-danger" data-message="Hapus level kognitif ini?">Hapus</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Modal Edit Kognitif -->
+                                        <div class="modal fade" id="editKognitif<?= $kg['id'] ?>" tabindex="-1">
+                                          <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow-lg">
+                                              <form method="POST">
+                                                  <div class="modal-header bg-light">
+                                                    <h5 class="modal-title fw-bold">Edit Level Kognitif</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                  </div>
+                                                  <div class="modal-body text-start">
+                                                    <input type="hidden" name="id" value="<?= $kg['id'] ?>">
+                                                    <div class="mb-3">
+                                                        <label>Level (C1 - C6)</label>
+                                                        <input type="text" name="level" class="form-control" value="<?= htmlspecialchars($kg['level']) ?>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label>Nama Taksonomi</label>
+                                                        <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($kg['name']) ?>" required>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label>Deskripsi</label>
+                                                        <textarea name="description" class="form-control" rows="3" required><?= htmlspecialchars($kg['description']) ?></textarea>
+                                                    </div>
+                                                  </div>
+                                                  <div class="modal-footer">
+                                                    <button type="submit" name="edit_kognitif" class="btn btn-primary fw-bold w-100">Simpan Perubahan</button>
+                                                  </div>
+                                              </form>
+                                            </div>
+                                          </div>
+                                        </div>
+                                    <?php 
+                                        endforeach; 
+                                    else:
+                                    ?>
+                                        <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada data kognitif.</td></tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             <?php elseif ($page === '4c'): ?>
-                <!-- Form Tambah 4C -->
-                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4 w-100">
+                <div class="card mb-4 border-0 shadow-sm col-12 col-xl-9 rounded-4">
                     <div class="card-body p-4">
                         <h5 class="mb-3 text-primary fw-bold">Tambah Indikator 4C</h5>
                         <form method="POST" class="row g-3">
@@ -516,8 +598,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 </div>
 
-                <!-- Tabel 4C -->
-                <div class="card shadow-sm border-0 col-12 col-xl-9 rounded-4 w-100">
+                <div class="card shadow-sm border-0 col-12 col-xl-9 rounded-4">
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0 align-middle">
@@ -537,7 +618,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             <td class="text-center">
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#edit4c<?= $fc['id'] ?>">Edit</button>
-                                                    <!-- Form Hapus (Fixed dengan Hidden Input) -->
                                                     <form method="POST" class="form-hapus-sweet m-0">
                                                         <input type="hidden" name="delete_4c" value="1">
                                                         <input type="hidden" name="id" value="<?= $fc['id'] ?>">
@@ -592,7 +672,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
 
             <?php elseif ($page === 'auth'): ?>
-                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4 w-100">
+                <div class="card mb-4 shadow-sm border-0 col-12 col-md-8 col-xl-6 rounded-4">
                     <div class="card-body p-3 p-md-4">
                         <form method="POST">
                             <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">Verifikasi Akun Lama</h5>
@@ -623,7 +703,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <!-- Script Global untuk Konfirmasi Hapus SweetAlert2 (Terintegrasi) -->
+    <!-- Script Global untuk Konfirmasi Hapus SweetAlert2 -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const deleteForms = document.querySelectorAll('.form-hapus-sweet');
@@ -646,7 +726,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     customClass: { popup: 'rounded-4 border-0 shadow-lg' }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Tambahkan hidden input berdasarkan name pada input pertama agar PHP mengenali perintah hapus
                         const hiddenInput = document.createElement('input');
                         hiddenInput.type = 'hidden';
                         hiddenInput.name = form.querySelector('input[type="hidden"]:first-child').name; 
@@ -659,6 +738,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         });
     });
     </script>
+    
     <!-- Script Anti-Glitch Modal Glassmorphism -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
