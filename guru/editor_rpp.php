@@ -1177,7 +1177,7 @@ function listToHtml($array)
                             </tr>
                             <tr style='background:#f9f9f9; text-align:center;'>
                                 <th>No</th>
-                                <th>Kompetensi Dasar</th>
+                                <th>Tujuan Pembelajaran</th>
                                 <th>Indikator</th>
                                 <th>Jenis Soal</th>
                                 <th>Nomor Soal</th>
