@@ -77,9 +77,9 @@ if ($rpp_id) {
     $stmtApi->execute([$guru_id]);
     $userApi = $stmtApi->fetch();
 
-    $api_key = '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';
-    $url = 'https://api.groq.com/openai/v1/chat/completions';
-    $api_model = 'llama-3.3-70b-versatile';
+    $api_key = 'vPY8JQxy04cKKbshuIo342L7uHuxATtJ';
+    $url = 'https://api.mistral.ai/v1/chat/completions';
+    $api_model = 'codestral-2508';
 
     $custom_token = trim($userApi['api_token'] ?? '');
     $provider = $userApi['api_provider'] ?? 'groq';
@@ -93,8 +93,8 @@ if ($rpp_id) {
             $url = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
             $api_model = 'gemini-2.5-flash';
         } elseif ($provider === 'groq') {
-            $url = 'https://api.groq.com/openai/v1/chat/completions';
-            $api_model = 'llama-3.3-70b-versatile';
+            $url = 'https://api.mistral.ai/v1/chat/completions';
+            $api_model = 'codestral-2508';
         }
     }
 }
@@ -235,9 +235,9 @@ else {
     $stmtApi->execute([$guru_id]);
     $userApi = $stmtApi->fetch();
 
-    $api_key = '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';
-    $url = 'https://api.groq.com/openai/v1/chat/completions';
-    $api_model = 'llama-3.3-70b-versatile';
+    $api_key = 'vPY8JQxy04cKKbshuIo342L7uHuxATtJ';
+    $url = 'https://api.mistral.ai/v1/chat/completions';
+    $api_model = 'codestral-2508';
 
     $custom_token = trim($userApi['api_token'] ?? '');
     $provider = $userApi['api_provider'] ?? 'groq';
@@ -251,8 +251,8 @@ else {
             $url = 'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions';
             $api_model = 'gemini-2.5-flash';
         } elseif ($provider === 'groq') {
-            $url = 'https://api.groq.com/openai/v1/chat/completions';
-            $api_model = 'llama-3.3-70b-versatile';
+            $url = 'https://api.mistral.ai/v1/chat/completions';
+            $api_model = 'codestral-2508';
         }
     }
 
@@ -297,12 +297,10 @@ Gunakan format 'Tujuan (Level C...)'. Pilih level kognitif yang relevan (tidak h
     },
     \"desain\": {
         \"capaian\": \"Kalimat capaian sesuai tingkat $jenjang...\",
-        \"lintas_disiplin\": \"<b>Mapel 1</b><br>- kaitannya...<br><b>Mapel 2</b><br>- kaitannya...\",
         \"tujuan\": [\"1. Mengingat... (C1)\", \"2. Memahami... (C2)\", \"3. Menerapkan... (C3)\"],
         \"pendekatan_model\": \"<b>Pendekatan:</b> Deep Learning<br><b>Model:</b> Problem Based Learning<br><b>Sintaks:</b><br>1. Orientasi<br>2. Mengorganisasi<br>3. Membimbing<br>4. Menyajikan<br>5. Evaluasi<br><b>Metode:</b> Diskusi, Tanya Jawab\",
         \"kemitraan\": \"Teman sebaya: Murid saling...\",
-        \"lingkungan\": [\"1. Ruang kelas...\", \"2. Ruang virtual...\", \"3. Budaya belajar...\"],
-        \"digital\": [\"1. Video Youtube...\", \"2. Presentasi Canva...\"]
+        \"lingkungan\": [\"1. Ruang kelas...\", \"2. Ruang virtual...\", \"3. Budaya belajar...\"]
     },
     \"pengalaman\": {
         \"pendahuluan\": {
@@ -351,11 +349,11 @@ Gunakan format 'Tujuan (Level C...)'. Pilih level kognitif yang relevan (tidak h
         ],
         \"uraian\": [
             " . ($is_high_class ? "
-            {\"level_kognitif\": \"C3 (Menerapkan)\", \"kd\": \"Menerapkan rumus...\", \"indikator\": \"Murid dapat menerapkan...\", \"soal\": \"[Soal Essay 1] ...\", \"kunci\": \"Penjelasan kunci jawaban panjang...\"},
-            {\"level_kognitif\": \"C3 (Menerapkan)\", \"kd\": \"Menerapkan rumus...\", \"indikator\": \"Murid dapat menerapkan...\", \"soal\": \"[Soal Essay 2] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C4 (Menganalisis)\", \"kd\": \"Menganalisis masalah...\", \"indikator\": \"Murid dapat menganalisis...\", \"soal\": \"[Soal Essay 3] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C4 (Menganalisis)\", \"kd\": \"Menganalisis masalah...\", \"indikator\": \"Murid dapat menganalisis...\", \"soal\": \"[Soal Essay 4] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C4 (Menganalisis)\", \"kd\": \"Menganalisis masalah...\", \"indikator\": \"Murid dapat menganalisis...\", \"soal\": \"[Soal Essay 5] ...\", \"kunci\": \"...\"}
+            {\"level_kognitif\": \"C1 (mengingat)\", \"kd\": \"Mengingat rumus...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal Essay 1] ...\", \"kunci\": \"Penjelasan kunci jawaban panjang...\"},
+            {\"level_kognitif\": \"C1 (mengingat)\", \"kd\": \"Mengingat rumus...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal Essay 2] ...\", \"kunci\": \"...\"},
+            {\"level_kognitif\": \"C2 (memahami)\", \"kd\": \"Memahami masalah...\", \"indikator\": \"Murid dapat memahami...\", \"soal\": \"[Soal Essay 3] ...\", \"kunci\": \"...\"},
+            {\"level_kognitif\": \"C2 (memahami)\", \"kd\": \"Memahami masalah...\", \"indikator\": \"Murid dapat memahami...\", \"soal\": \"[Soal Essay 4] ...\", \"kunci\": \"...\"},
+            {\"level_kognitif\": \"C3 (menerapkan)\", \"kd\": \"Menerapkan Konsep...\", \"indikator\": \"Murid dapat menerapkan...\", \"soal\": \"[Soal Essay 5] ...\", \"kunci\": \"...\"}
             " : "") . "
         ]
     },
@@ -849,10 +847,6 @@ function listToHtml($array)
                             <td style='padding:8px;'><?= $rpp['desain']['capaian'] ?? '' ?></td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Lintas<br>Disiplin Ilmu</b></td>
-                            <td style='padding:8px;'><?= $rpp['desain']['lintas_disiplin'] ?? '' ?></td>
-                        </tr>
-                        <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Tujuan<br>Pembelajaran</b></td>
                             <td style='padding:8px;'><?= listToHtml($rpp['desain']['tujuan'] ?? []) ?></td>
                         </tr>
@@ -871,10 +865,6 @@ function listToHtml($array)
                         <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Lingkungan<br>Pembelajaran</b></td>
                             <td style='padding:8px;'><?= listToHtml($rpp['desain']['lingkungan'] ?? []) ?></td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Pemanfaatan<br>Digital</b></td>
-                            <td style='padding:8px;'><?= listToHtml($rpp['desain']['digital'] ?? []) ?></td>
                         </tr>
                     </table>
 

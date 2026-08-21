@@ -549,7 +549,7 @@ function getMyClasses($pdo, $guru_id) {
                                 <div class="col-md-4">
                                     <label class="form-label text-muted small fw-bold">Provider AI</label>
                                     <select name="provider" class="form-select form-select-lg" required>
-                                        <option value="groq" <?= $currentProvider == 'groq' ? 'selected' : '' ?>>Groq (Llama 3)</option>
+                                        <option value="groq" <?= $currentProvider == 'groq' ? 'selected' : '' ?>>Mistral AI</option>
                                         <option value="openai" <?= $currentProvider == 'openai' ? 'selected' : '' ?>>OpenAI (ChatGPT)</option>
                                         <option value="gemini" <?= $currentProvider == 'gemini' ? 'selected' : '' ?>>Google Gemini</option>
                                         <option value="anthropic" <?= $currentProvider == 'anthropic' ? 'selected' : '' ?>>Anthropic (Claude)</option>
