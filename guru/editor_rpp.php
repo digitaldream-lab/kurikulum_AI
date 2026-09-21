@@ -77,7 +77,7 @@ if ($rpp_id) {
     $stmtApi->execute([$guru_id]);
     $userApi = $stmtApi->fetch();
 
-    $api_key = 'vPY8JQxy04cKKbshuIo342L7uHuxATtJ';
+    $api_key = 'M3yooxXGVG273FC076rdOTnqBoapxLSp';
     $url = 'https://api.mistral.ai/v1/chat/completions';
     $api_model = 'codestral-2508';
 
@@ -172,14 +172,6 @@ else {
         $kognitif_teks .= "- " . $kg['level'] . " (" . $kg['name'] . "): " . $kg['description'] . "\n";
     }
 
-    // AMBIL DATA 4C DARI DATABASE UNTUK PROMPT
-    $stmt4c = $pdo->query("SELECT * FROM four_c");
-    $fourCs = $stmt4c->fetchAll();
-    $fourc_teks = "";
-    foreach ($fourCs as $fc) {
-        $fourc_teks .= "- " . $fc['category'] . ": " . $fc['description'] . "\n";
-    }
-
     // PENGECEKAN DALIL MURNI DARI DATABASE (TIDAK MELIBATKAN AI)
     $dalil_html = "";
     $stmtDalils = $pdo->query("SELECT * FROM dalils");
@@ -194,14 +186,11 @@ else {
                 $image_tag = "";
                 if (!empty($d['image_path'])) {
                     $img_file = "../uploads/dalils/" . $d['image_path'];
-                    // Jika file fisiknya ada di server
                     if (file_exists($img_file)) {
-                        // Konversi gambar ke Base64 agar tidak hilang saat di-export ke Word
                         $img_data = base64_encode(file_get_contents($img_file));
                         $mime_type = mime_content_type($img_file);
                         $base64_src = "data:" . $mime_type . ";base64," . $img_data;
 
-                        // Buat tag HTML untuk gambar (menggunakan width kuno untuk Word)
                         $image_tag = "
                         <div style='text-align:center; margin: 15px 0;'>
                             <img src='{$base64_src}' width='80%' style='max-width:100%; border-radius:10px; cursor:pointer; border: 2px solid #eab308;' alt='Gambar Dalil' title='Klik untuk mengubah ukuran' onclick='window.resizeImageForWord(this);'>
@@ -235,7 +224,7 @@ else {
     $stmtApi->execute([$guru_id]);
     $userApi = $stmtApi->fetch();
 
-    $api_key = 'vPY8JQxy04cKKbshuIo342L7uHuxATtJ';
+    $api_key = 'M3yooxXGVG273FC076rdOTnqBoapxLSp';
     $url = 'https://api.mistral.ai/v1/chat/completions';
     $api_model = 'codestral-2508';
 
@@ -275,101 +264,149 @@ WAJIB KEMBALIKAN DALAM FORMAT JSON SEPERTI STRUKTUR BERIKUT.
 ATURAN KHUSUS (ATURAN MUTLAK JANGAN DILANGGAR!):
 1. TUJUAN PEMBELAJARAN (C1-C6): Buatkan tujuan pembelajaran berdasarkan taksonomi bloom berikut:
 $kognitif_teks
-Gunakan format 'Tujuan (Level C...)'. Pilih level kognitif yang relevan (tidak harus semua C1-C6, sesuaikan dengan materi).
-2. SINKRONISASI KOGNITIF SOAL: Anda WAJIB memastikan bahwa level kognitif (C1-C6) yang muncul di bagian 'soal_evaluasi' SAMA PERSIS dengan level kognitif yang Anda tetapkan di 'Tujuan Pembelajaran'. Jika di tujuan hanya ada C1, C2, C3, maka soal juga HANYA boleh C1, C2, C3. JANGAN memunculkan level yang tidak ada di tujuan!
-3. PENGALAMAN BELAJAR (INTI & 4C): Letakkan label 4C (Communication, Collaboration, Creativity, Critical Thinking) DI DALAM poin-poin kegiatan nomor (tahapan rinciannya), BUKAN pada judul tahap utamanya. Contoh yang benar: '1. Siswa dibagi kelompok... (Collaboration)'.
-4. KRITERIA RUBRIK TERTAKAR: Pada bagian 'asesmen', deskripsi kriteria penilaian (Sangat Baik, Baik, dsb) WAJIB menggunakan tolak ukur yang to-the-point, pasti, dan blak-blakan menggunakan ANGKA/FREKUENSI. JANGAN menggunakan kata ngambang seperti 'Sangat aktif' atau 'Cukup aktif'. Contoh benar: 'Siswa lebih dari 8 kali terlibat dalam proses pembelajaran'.
-5. KATA KERJA KD & INDIKATOR SOAL: Pada 'soal_evaluasi', kata pertama pada 'kd' dan 'indikator' WAJIB menyesuaikan dengan level kognitifnya. Jika level C1 (Mengingat), maka KD wajib berbunyi 'Mengingat konsep...', BUKAN 'Memahami konsep'.
-6. JUMLAH SOAL EVALUASI: 
-- PILIHAN GANDA: Anda WAJIB menghasilkan TEPAT 10 SOAL Pilihan Ganda.
-- URAIAN / ESSAY: " . ($is_high_class ? "Sistem mendeteksi ini KELAS TINGGI. Anda WAJIB menghasilkan TEPAT 5 SOAL Uraian (Essay). JANGAN DIKOSONGKAN!" : "Sistem mendeteksi ini KELAS RENDAH. JANGAN buat soal Uraian, biarkan array 'uraian' KOSONG [].") . "
+Gunakan format 'Tujuan (Level C...)'. Pilih level kognitif yang relevan.
+2. SINKRONISASI KOGNITIF SOAL: Anda WAJIB memastikan bahwa level kognitif (C1-C6) yang muncul di bagian 'soal_evaluasi' SAMA PERSIS dengan level kognitif yang Anda tetapkan di 'Tujuan Pembelajaran'.
+3. PENGALAMAN BELAJAR (INTI & 4C): Letakkan label 4C (Communication, Collaboration, Creativity, Critical Thinking) DI DALAM poin-poin kegiatan nomor (tahapan rinciannya).
+4. JUMLAH SOAL EVALUASI: Sesuaikan jumlah soal Pilihan Ganda dengan jumlah tujuan pembelajaran (C1, C2, dst). " . ($is_high_class ? "Sistem mendeteksi ini KELAS TINGGI. Buat secukupnya soal Uraian (Essay)." : "Sistem mendeteksi ini KELAS RENDAH. JANGAN buat soal Uraian, biarkan array 'uraian' KOSONG [].") . "
+5. LKPD: Buatlah isi LKPD yang memuat 4 Aktivitas spesifik berdasarkan materi. Aktivitas 1 berisi observasi/pengujian. Aktivitas 2 evaluasi. Aktivitas 3 refleksi spiritual dengan QS. Aktivitas 4 ikrar.
 
 (Isi semua nilainya dengan teks yang detail sesuai aturan di atas):
 {
-    \"identifikasi\": {
-        \"pengetahuan_awal\": \"Penjelasan detail 1-2 kalimat menyesuaikan jenjang $jenjang\",
-        \"minat_belajar\": \"Penjelasan detail 1-2 kalimat menyesuaikan jenjang $jenjang\",
-        \"kebutuhan_bermakna\": \"Penjelasan detail 1-2 kalimat menyesuaikan jenjang $jenjang\",
-        \"kebutuhan_sadar\": \"Penjelasan detail 1-2 kalimat menyesuaikan jenjang $jenjang\",
-        \"kebutuhan_senang\": \"Penjelasan detail 1-2 kalimat menyesuaikan jenjang $jenjang\",
-        \"materi_pokok\": [\"poin materi 1\", \"poin materi 2\", \"poin materi 3\"],
-        \"dimensi_profil\": [\"DPL 1 Keimanan...\", \"DPL 3 Penalaran...\"]
-    },
-    \"desain\": {
-        \"capaian\": \"Kalimat capaian sesuai tingkat $jenjang...\",
-        \"tujuan\": [\"1. Mengingat... (C1)\", \"2. Memahami... (C2)\", \"3. Menerapkan... (C3)\"],
-        \"pendekatan_model\": \"<b>Pendekatan:</b> Deep Learning<br><b>Model:</b> Problem Based Learning<br><b>Sintaks:</b><br>1. Orientasi<br>2. Mengorganisasi<br>3. Membimbing<br>4. Menyajikan<br>5. Evaluasi<br><b>Metode:</b> Diskusi, Tanya Jawab\",
-        \"kemitraan\": \"Teman sebaya: Murid saling...\",
-        \"lingkungan\": [\"1. Ruang kelas...\", \"2. Ruang virtual...\", \"3. Budaya belajar...\"]
-    },
-    \"pengalaman\": {
-        \"pendahuluan\": {
-            \"orientasi\": [\"1. Guru membuka pembelajaran dengan salam...\", \"2. Apersepsi yang menggugah pikiran...\"],
-            \"motivasi\": [\"1. Murid dengan panduan guru melakukan aktivitas unik/ice breaking...\", \"2. ...\"]
+
+
+\"identitas\": {
+        \"sub_materi\": \"(Judul materi spesifik)\",
+        \"target_4c\": {
+            \"critical\": \"(Aksi spesifik materi untuk Critical Thinking)\",
+            \"creative\": \"(Aksi spesifik materi untuk Creativity)\",
+            \"communication\": \"(Aksi spesifik materi untuk Communication)\",
+            \"collab\": \"(Aksi spesifik materi untuk Collaboration)\"
         },
-        \"inti\": [
-            {
-                \"tahap\": \"Tahap 1. Mengorientasikan murid terhadap masalah\",
-                \"kegiatan\": [\"1. Siswa diberikan contoh soal terkait materi (Communication)\", \"2. ...\"]
-            },
-            {
-                \"tahap\": \"Tahap 2. Mengorganisasikan murid untuk belajar bersama\",
-                \"kegiatan\": [\"1. Siswa dibagi menjadi kelompok untuk mengerjakan soal (Collaboration)\", \"2. ...\"]
-            },
-            {
-                \"tahap\": \"Tahap 3. Guru Membimbing Penyelidikan\",
-                \"kegiatan\": [\"1. ... (Critical Thinking)\", \"2. ...\"]
-            },
-            {
-                \"tahap\": \"Tahap 4. Mengembangkan dan Menyajikan Hasil\",
-                \"kegiatan\": [\"1. ... (Creativity)\", \"2. ...\"]
-            },
-            {
-                \"tahap\": \"Tahap 5. Menganalisis dan Mengevaluasi Proses\",
-                \"kegiatan\": [\"1. ... (Communication)\", \"2. ...\"]
-            }
+        \"media\": [\"(Array of String, 4-6 alat/bahan/media spesifik)\"]
+    },
+    
+    \"identifikasi\": {
+        \"pengetahuan_awal\": \"Penjelasan awal murid\",
+        \"minat_belajar\": \"Minat belajar murid\",
+        \"kebutuhan_bermakna\": \"Kebutuhan bermakna\",
+        \"kebutuhan_sadar\": \"Kebutuhan sadar\",
+        \"kebutuhan_senang\": \"Kebutuhan senang\",
+        \"materi_pelajaran\": {
+            \"judul\": \"(Judul Topik Materi)\",
+            \"pengantar\": \"(1 kalimat pengantar deskripsi materi)\",
+            \"poin\": [
+                \"1. (Poin pertama detail materi dari referensi)\",
+                \"2. (Poin kedua detail materi dari referensi)\",
+                \"3. (Poin ketiga detail materi dari referensi)\"
+            ]
+        },
+        \"dimensi_profil\": [\"DPL 1 Keimanan...\", \"DPL 2 Penalaran...\"]
+    },
+    },
+     \"desain\": {
+            \"capaian\": \"(String, capaian pembelajaran yang wajib memuat nilai Islami di akhirnya, misal: '...keteraturan hukum alam (Sunnatullah), serta aksi pelestarian berlandaskan adab Islami.')\",
+            \"lintas_disiplin\": [
+                {
+                    \"mapel\": \"(Tentukan Mapel Terkait 1 yang relevan dengan materi ini)\",
+                    \"kaitan\": \"- (Jelaskan kaitan konkrit mapel ini dengan materi utama)\"
+                },
+                {
+                    \"mapel\": \"(Tentukan Mapel Terkait 2 yang relevan dengan materi ini)\",
+                    \"kaitan\": \"- (Jelaskan kaitan konkrit mapel ini dengan materi utama)\"
+                }
+            ],
+        \"tujuan\": [
+        \"Mengingat ... (C1) | (Critical Thinking) | (Fase Eksplorasi STEAM)\",
+        \"Memahami ... (C2) | (Critical Thinking) | (Fase Eksplorasi STEAM)\",
+        \"Menerapkan ... (C3) | (Creativity) | (Fase Ta'awun)\",
+        \"Mengkaitkan proses alam dengan firman Allah QS... (C5) | (Critical Thinking) | (Fase Tafakkur)\"
+
         ],
-        \"penutup\": [\"1. Murid menyimpulkan\", \"2. Mengerjakan evaluasi\", \"3. Berdoa\"]
+        \"steam\": [
+            \"Science (S): Memahami konsep...\",
+            \"Technology (T): Pemanfaatan alat...\",
+            \"Engineering (E): Melaksanakan tahapan akhir EDP...\",
+            \"Art (A): Merancang slogan dan poster...\",
+            \"Mathematics (M): Menghitung debit laju...\"
+        ],
+        \"topik\": \"(Isi dengan Topik Spesifik Materi)\",
+        \"kemitraan\": \"Teman sebaya: Murid saling berbagi pengetahuan dan pengalaman tentang...\",
+        \"digital\": [
+            \"Video Youtube tentang...\",
+            \"Presentasi Canva tentang...\"
+        ]
+    },
+
+    \"pengalaman\": {
+        \"pendahuluan\": [
+            \"1. Pembukaan & Presensi: (Aktivitas guru...)\",
+            \"2. Apersepsi Tadabbur (Fase 1): (Aktivitas memantik rasa ingin tahu...)\",
+            \"3. Pengondisian Uji Coba: (Aktivitas membagikan alat...)\"
+        ],
+        \"inti\": [
+            \"1. Eksplorasi STEAM (Fase 2): (Aktivitas pengujian siswa) (Collaboration)\",
+            \"2. Tahap Improve: (Aktivitas mengamati masalah) (Critical Thinking)\",
+            \"3. Refleksi Tafakkur (Fase 3): (Aktivitas guru memandu dialog spiritual) (Communication)\",
+            \"4. Perumusan Aksi Adab (Fase 4): (Aktivitas merumuskan aksi) (Creativity)\",
+            \"5. Presentasi Proyek: (Aktivitas kelompok mempresentasikan) (Communication)\"
+        ],
+        \"penutup\": [
+            \"1. Apresiasi & Evaluasi: (Aktivitas guru...)\",
+            \"2. Penutup & Doa: (Aktivitas guru...)\"
+        ]
     },
     \"asesmen\": {
-        \"awal_pertanyaan\": [\"Pertanyaan pemantik dari materi?\", \"Pertanyaan pemantik 2?\", \"Pertanyaan pemantik 3?\"],
-        \"awal_mahir\": \"Menjawab 4-5 pertanyaan dengan benar dan logis...\",
-        \"awal_cakap\": \"Menjawab 2-3 pertanyaan dengan benar...\",
-        \"awal_berkembang\": \"Menjawab 0-1 pertanyaan dengan benar...\",
-        \"proses_terlibat\": [\"Siswa lebih dari 8 kali terlibat dalam proses pembelajaran (4)\", \"Siswa 5-7 kali terlibat (3)\", \"Siswa 2-4 kali terlibat (2)\", \"Siswa 0-1 kali terlibat (1)\"],
-        \"proses_analisis\": [\"Siswa mampu mengurai 4 elemen materi dengan tepat (4)\", \"Siswa mampu mengurai 3 elemen (3)\", \"Siswa mampu mengurai 2 elemen (2)\", \"Siswa hanya mengurai 1 elemen (1)\"],
-        \"proses_kerjasama\": [\"Siswa memimpin diskusi dan membantu lebih dari 2 temannya (4)\", \"Siswa berkontribusi ide 3 kali (3)\", \"Siswa hanya mendengarkan (2)\", \"Siswa tidak fokus pada tugas kelompok (1)\"],
-        \"proses_saji\": [\"Presentasi memenuhi 4 kriteria kelengkapan (4)\", \"Presentasi memenuhi 3 kriteria (3)\", \"Presentasi memenuhi 2 kriteria (2)\", \"Presentasi memenuhi 1 kriteria (1)\"]
+        \"awal_pertanyaan\": [\"Pertanyaan pemantik dari materi?\", \"Pertanyaan pemantik 2?\"],
+        \"awal_mahir\": \"Menjawab 4-5 pertanyaan dengan benar dan logis tentang materi...\",
+        \"awal_cakap\": \"Menjawab 2-3 pertanyaan dengan benar tentang materi...\",
+        \"awal_berkembang\": \"Menjawab 0-1 pertanyaan dengan benar tentang materi...\",
+        \"proses_critical\": [\"(Deskripsi skor 1 kurang, analisis materi)\", \"(Deskripsi skor 2 cukup)\", \"(Deskripsi skor 3 baik)\", \"(Deskripsi skor 4 sangat mendalam)\"],
+        \"proses_creativity\": [\"(Deskripsi skor 1 kurang, poster/karya)\", \"(Deskripsi skor 2 cukup)\", \"(Deskripsi skor 3 baik)\", \"(Deskripsi skor 4 sangat kreatif)\"],
+        \"proses_collaboration\": [\"(Deskripsi skor 1 kurang kompak)\", \"(Deskripsi skor 2 cukup)\", \"(Deskripsi skor 3 baik)\", \"(Deskripsi skor 4 sangat kompak)\"],
+        \"proses_communication\": [\"(Deskripsi skor 1 canggung)\", \"(Deskripsi skor 2 membaca teks)\", \"(Deskripsi skor 3 percaya diri)\", \"(Deskripsi skor 4 sangat memukau)\"]
     },
     \"soal_evaluasi\": {
         \"pilihan_ganda\": [
-            {\"level_kognitif\": \"C1 (Mengingat)\", \"kd\": \"Mengingat konsep...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal 1] ...<br>a. Opsi spesifik<br>b. Opsi spesifik<br>c. Opsi spesifik<br>d. Opsi spesifik\", \"kunci\": \"A\"},
-            {\"level_kognitif\": \"C1 (Mengingat)\", \"kd\": \"Mengingat konsep...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal 2] ...\", \"kunci\": \"B\"},
-            {\"level_kognitif\": \"C2 (Memahami)\", \"kd\": \"Memahami konsep...\", \"indikator\": \"Murid dapat memahami...\", \"soal\": \"[Soal 3] ...\", \"kunci\": \"C\"}
+            {\"level_kognitif\": \"C1 (Mengingat)\", \"kd\": \"Mengingat konsep...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal 1] ...<br>a. Opsi<br>b. Opsi<br>c. Opsi<br>d. Opsi\", \"kunci\": \"A\"}
         ],
         \"uraian\": [
             " . ($is_high_class ? "
-            {\"level_kognitif\": \"C1 (mengingat)\", \"kd\": \"Mengingat rumus...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal Essay 1] ...\", \"kunci\": \"Penjelasan kunci jawaban panjang...\"},
-            {\"level_kognitif\": \"C1 (mengingat)\", \"kd\": \"Mengingat rumus...\", \"indikator\": \"Murid dapat mengingat...\", \"soal\": \"[Soal Essay 2] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C2 (memahami)\", \"kd\": \"Memahami masalah...\", \"indikator\": \"Murid dapat memahami...\", \"soal\": \"[Soal Essay 3] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C2 (memahami)\", \"kd\": \"Memahami masalah...\", \"indikator\": \"Murid dapat memahami...\", \"soal\": \"[Soal Essay 4] ...\", \"kunci\": \"...\"},
-            {\"level_kognitif\": \"C3 (menerapkan)\", \"kd\": \"Menerapkan Konsep...\", \"indikator\": \"Murid dapat menerapkan...\", \"soal\": \"[Soal Essay 5] ...\", \"kunci\": \"...\"}
+            {\"level_kognitif\": \"C3 (menerapkan)\", \"kd\": \"Menerapkan Konsep...\", \"indikator\": \"Murid dapat menerapkan...\", \"soal\": \"[Soal Essay 1] ...\", \"kunci\": \"...\"}
             " : "") . "
         ]
     },
     \"lkpd\": {
-        \"tahap1\": \"Cerita/masalah pemantik diskusi kelompok dari materi PDF...\",
-        \"tahap3\": \"<ol><li>Pertanyaan diskusi 1?</li><li>Pertanyaan diskusi 2?</li></ol>\",
-        \"tahap5\": \"<ol><li>Pertanyaan refleksi 1?</li><li>Pertanyaan refleksi 2?</li><li>Pertanyaan refleksi 3?</li><li>Pertanyaan refleksi 4?</li><li>Pertanyaan refleksi 5?</li></ol>\"
+        \"judul_lkpd\": \"LEMBAR KERJA PESERTA DIDIK: PENGUJIAN ALAT, TAFAKKUR, & AKSI ADAB (Sesuaikan dengan Materi)\",
+        \"aktivitas1\": {
+            \"judul\": \"Aktivitas 1: Uji Kinerja / Pengukuran Data Sains & Matematika\",
+            \"instruksi\": \"(Instruksi spesifik pengujian praktik berdasarkan materi)\",
+            \"tabel_parameter\": [
+                \"(Parameter observasi/pengukuran 1, misal: Volume Air/Bentuk daun)\",
+                \"(Parameter observasi/pengukuran 2, misal: Waktu tetesan/Warna)\",
+                \"(Parameter observasi/pengukuran 3)\",
+                \"(Parameter observasi/pengukuran 4)\"
+            ]
+        },
+        \"aktivitas2_pertanyaan\": [
+            \"1. Apakah hasil pengujian/praktek kelompokmu sudah sesuai harapan? Jika belum, bagian mana yang perlu diperbaiki?\",
+            \"2. Apa hambatan terbesar dalam aktivitas ini? Apa tindakan perbaikan (Improve) yang dilakukan kelompokmu?\"
+        ],
+        \"aktivitas3\": {
+            \"judul\": \"Aktivitas 3: Refleksi Spiritual 'Tafakkur Sains-Qur'an' (Fase 3)\",
+            \"ayat\": \"QS. (Surat yang relevan): (Ayat)\",
+            \"narasi\": \"Setelah kalian melakukan aktivitas ini dan melihat (fenomena/hasil praktik), bagaimana perasaan kalian terhadap nikmat/kebesaran Allah yang ...\"
+        },
+        \"aktivitas4\": {
+            \"judul\": \"Aktivitas 4: Ikrar Aksi Adab (Fase 4)\",
+            \"instruksi_ikrar\": \"Tuliskan 3 komitmen nyata adab menggunakan/menjaga/merawat (objek materi) di sekolah sesuai ajaran Rasulullah SAW!\"
+        }
     },
     \"bahan_ajar\": {
-        \"pengertian\": \"Tulis 2 paragraf penjelasan utama secara komprehensif (Apa itu materi ini?). WAJIB SElipkan nilai agama/spiritual seperti 'diciptakan oleh Allah'.\",
+        \"pengertian\": \"Tulis 2 paragraf penjelasan utama...\",
         \"tahapan\": [
-            {\"judul\": \"Sub Bab 1\", \"deskripsi\": \"Penjelasan mendetail.\"},
-            {\"judul\": \"Sub Bab 2\", \"deskripsi\": \"Penjelasan mendetail.\"},
-            {\"judul\": \"Sub Bab 3\", \"deskripsi\": \"Penjelasan mendetail.\"}
+            {\"judul\": \"Sub Bab 1\", \"deskripsi\": \"Penjelasan mendetail.\"}
         ],
-        \"manfaat\": [\"Manfaat 1 secara detail...\", \"Manfaat 2 secara detail...\", \"Manfaat 3 secara detail...\"],
+        \"manfaat\": [\"Manfaat 1 secara detail...\", \"Manfaat 2 secara detail...\"],
         \"kosakata\": [
             {\"kata\": \"Istilah 1\", \"arti\": \"Arti istilah 1\"}
         ]
@@ -385,7 +422,7 @@ Gunakan format 'Tujuan (Level C...)'. Pilih level kognitif yang relevan (tidak h
         ],
         'response_format' => ['type' => 'json_object'],
         'temperature' => 0.5,
-        'max_tokens' => 4500 // Memperpanjang nafas AI
+        'max_tokens' => 10000 // Memperpanjang nafas AI
     ];
 
     $json_payload = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
@@ -431,7 +468,7 @@ function listToHtml($array)
     foreach ($array as $item) {
         // Bersihkan angka berulang jika AI sudah memasukkan angka di teksnya
         $cleanItem = preg_replace('/^\d+\.\s*/', '', $item);
-        $html .= "<li>$cleanItem</li>";
+        $html .= "<li style='margin-bottom:8px;'>$cleanItem</li>";
     }
     $html .= "</ol>";
     return $html;
@@ -713,7 +750,8 @@ function listToHtml($array)
         <div class="d-flex align-items-center gap-2 mb-2 mb-md-0">
             <a href="dashboard.php?page=generate" class="btn btn-outline-secondary">&larr; Kembali</a>
             <h5 class="m-0 fw-bold text-primary fs-6 fs-md-5 text-truncate" style="max-width: 250px;">✨ Editor RPP -
-                <?= htmlspecialchars($material_title) ?></h5>
+                <?= htmlspecialchars($material_title) ?>
+            </h5>
         </div>
         <div class="d-flex flex-wrap gap-2">
             <!-- Form Helper Id RPP -->
@@ -767,104 +805,235 @@ function listToHtml($array)
 
                     <h2 style='text-align:center;'>RENCANA PELAKSANAAN PEMBELAJARAN (RPP)</h2>
 
-                    <table style='width:100%; border-collapse:collapse; margin-bottom:20px;' border='1'>
-                        <tr style='background:#e0e0e0;'>
-                            <td colspan='4' style='padding:10px; text-align:center;'><b>IDENTITAS KURIKULUM</b></td>
-                        </tr>
-                        <tr>
-                            <td style='width:15%; padding:8px;'>Nama Penyusun</td>
-                            <td style='width:35%; padding:8px;'><?= $guru_name ?></td>
-                            <td style='width:15%; padding:8px;'>Sekolah</td>
-                            <td style='width:35%; padding:8px;'></td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px;'>Tahun Pelajaran</td>
-                            <td style='padding:8px;'><?= $tahun_pelajaran ?></td>
-                            <td style='padding:8px;'>Mata Pelajaran</td>
-                            <td style='padding:8px;'><?= $subject_name ?></td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px;'>Kelas</td>
-                            <td style='padding:8px;'><?= $class_name ?> (<?= $jenjang ?>)</td>
-                            <td style='padding:8px;'>Semester</td>
-                            <td style='padding:8px;'></td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px;'>Sub Materi</td>
-                            <td style='padding:8px;'><?= $material_title ?></td>
-                            <td style='padding:8px;'>Alokasi Waktu</td>
-                            <td style='padding:8px;'></td>
-                        </tr>
+                    <table style='width:100%; border-collapse:collapse; margin-bottom:20px; border: 2px solid #000;'
+                        border='1'>
+                        <thead>
+                            <tr style='background-color:#e2e8f0;'>
+                                <th colspan='4'
+                                    style='padding:10px; text-align:center; font-size:1.1rem; border: 2px solid #000;'>
+                                    IDENTITAS KURIKULUM</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style='width:15%; padding:8px;'><strong>Nama Penyusun</strong></td>
+                                <td style='width:35%; padding:8px;'><?= htmlspecialchars($guru_name) ?></td>
+                                <td style='width:15%; padding:8px;'><strong>Sekolah</strong></td>
+                                <td style='width:35%; padding:8px;'>-</td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px;'><strong>Tahun Pelajaran</strong></td>
+                                <td style='padding:8px;'><?= htmlspecialchars($tahun_pelajaran) ?></td>
+                                <td style='padding:8px;'><strong>Mata Pelajaran</strong></td>
+                                <td style='padding:8px;'><?= htmlspecialchars($subject_name) ?></td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px;'><strong>Kelas</strong></td>
+                                <td style='padding:8px;'><?= htmlspecialchars($class_name) ?>
+                                    (<?= htmlspecialchars($jenjang) ?>)</td>
+                                <td style='padding:8px;'><strong>Semester</strong></td>
+                                <td style='padding:8px;'>-</td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px;'><strong>Sub Materi</strong></td>
+                                <td style='padding:8px;'>
+                                    <?= $rpp['identitas']['sub_materi'] ?? htmlspecialchars($material_title) ?>
+                                </td>
+                                <td style='padding:8px;'><strong>Alokasi Waktu</strong></td>
+                                <td style='padding:8px;'>-</td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px;'><strong>Fase Model<br>STEAM-Religi</strong></td>
+                                <td style='padding:8px;'>
+                                    <div style='margin-bottom:4px;'>a. Tahap 1 - Apersepsi Tadabbur</div>
+                                    <div style='margin-bottom:4px;'>b. Tahap 2 - Eksplorasi STEAM</div>
+                                    <div style='margin-bottom:4px;'>c. Tahap 3 - Refleksi Tafakkur</div>
+                                    <div>d. Tahap 4 - Aksi Adab Islami</div>
+                                </td>
+                                <td style='padding:8px;'><strong>Integrasi<br>Karakter Aswaja</strong></td>
+                                <td style='padding:8px;'>
+                                    <ul style='margin:0; padding-left:1.2rem;'>
+                                        <li>Tafakkur (Renungan Sunnatullah)</li>
+                                        <li>Tawazun (Keseimbangan Alam)</li>
+                                        <li>Ta'awun (Gotong Royong)</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px;'><strong>Target<br>Keterampilan 4C</strong></td>
+                                <td style='padding:8px;'>
+                                    <ul style='margin:0; padding-left:1.2rem;'>
+                                        <li>Critical Thinking (<?= $rpp['identitas']['target_4c']['critical'] ?? '...' ?>)
+                                        </li>
+                                        <li>Creativity (<?= $rpp['identitas']['target_4c']['creative'] ?? '...' ?>)</li>
+                                        <li>Communication (<?= $rpp['identitas']['target_4c']['communication'] ?? '...' ?>)
+                                        </li>
+                                        <li>Collaboration (<?= $rpp['identitas']['target_4c']['collab'] ?? '...' ?>)</li>
+                                    </ul>
+                                </td>
+                                <td style='padding:8px;'><strong>Media, Alat &<br>Bahan</strong></td>
+                                <td style='padding:8px;'>
+                                    <ul style='margin:0; padding-left:1.2rem;'>
+                                        <?php
+                                        if (isset($rpp['identitas']['media']) && is_array($rpp['identitas']['media'])) {
+                                            foreach ($rpp['identitas']['media'] as $media) {
+                                                echo "<li>" . htmlspecialchars($media) . "</li>";
+                                            }
+                                        } else {
+                                            echo "<li>-</li>";
+                                        }
+                                        ?>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- TABEL A. IDENTIFIKASI -->
+                    <table style='width:100%; border-collapse:collapse; margin-bottom:20px; border: 2px solid #000;'
+                        border='1'>
+                        <thead>
+                            <tr style='background-color:#ffd966;'>
+                                <th colspan='2' style='padding:10px; text-align:left; border: 2px solid #000;'><strong>A.
+                                        Identifikasi</strong></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style='width:25%; padding:8px; vertical-align:top;'><strong>Murid</strong></td>
+                                <td style='padding:8px;'>
+                                    <div style='margin-bottom:8px;'>1. Pengetahuan Awal</div>
+                                    <div style='margin-left:20px; margin-bottom:8px;'>-
+                                        <?= $rpp['identifikasi']['pengetahuan_awal'] ?? '' ?>
+                                    </div>
+                                    <div style='margin-bottom:8px;'>2. Minat Belajar</div>
+                                    <div style='margin-left:20px; margin-bottom:8px;'>-
+                                        <?= $rpp['identifikasi']['minat_belajar'] ?? '' ?>
+                                    </div>
+                                    <div style='margin-bottom:8px;'>3. Kebutuhan Belajar</div>
+                                    <div style='margin-left:20px;'>
+                                        - <strong>Pembelajaran yang Bermakna (Meaningful Learning)</strong><br>
+                                        &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_bermakna'] ?? '' ?><br><br>
+                                        - <strong>Pembelajaran yang Berkesadaran (Mindful Learning)</strong><br>
+                                        &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_sadar'] ?? '' ?><br><br>
+                                        - <strong>Pembelajaran yang Menyenangkan (Joyful Learning)</strong><br>
+                                        &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_senang'] ?? '' ?>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px; vertical-align:top;'><strong>Materi Pelajaran</strong></td>
+                                <td style='padding:8px;'>
+                                    <strong
+                                        style='display:block; margin-bottom:10px;'><?= $rpp['identifikasi']['materi_pelajaran']['judul'] ?? $material_title ?></strong>
+                                    <p style='margin-bottom:10px;'>
+                                        <?= $rpp['identifikasi']['materi_pelajaran']['pengantar'] ?? '' ?>
+                                    </p>
+
+                                    <?php if (isset($rpp['identifikasi']['materi_pelajaran']['poin']) && is_array($rpp['identifikasi']['materi_pelajaran']['poin'])): ?>
+                                        <div style='margin:0; padding-left:0;'>
+                                            <?php foreach ($rpp['identifikasi']['materi_pelajaran']['poin'] as $poin): ?>
+                                                <div style='margin-bottom:8px;'><?= htmlspecialchars($poin) ?></div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <p>-</p>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style='padding:8px; vertical-align:top;'><strong>Dimensi Profil</strong></td>
+                                <td style='padding:8px;'>
+                                    <?= listToHtml($rpp['identifikasi']['dimensi_profil'] ?? []) ?>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <table style='width:100%; border-collapse:collapse; margin-bottom:20px;' border='1'>
-                        <tr style='background:#f2cd5c;'>
-                            <td colspan='2' style='padding:10px;'><b>A. Identifikasi</b></td>
-                        </tr>
-                        <tr>
-                            <td style='width:25%; padding:8px; vertical-align:top;'><b>Murid</b></td>
-                            <td style='padding:8px;'>
-                                <div style='margin-bottom:8px;'>1. Pengetahuan Awal</div>
-                                <div style='margin-left:20px; margin-bottom:8px;'>-
-                                    <?= $rpp['identifikasi']['pengetahuan_awal'] ?? '' ?></div>
-
-                                <div style='margin-bottom:8px;'>2. Minat Belajar</div>
-                                <div style='margin-left:20px; margin-bottom:8px;'>-
-                                    <?= $rpp['identifikasi']['minat_belajar'] ?? '' ?></div>
-
-                                <div style='margin-bottom:8px;'>3. Kebutuhan Belajar</div>
-                                <div style='margin-left:20px;'>
-                                    - <b>Pembelajaran yang Bermakna <i>(Meaningful Learning)</i></b><br>
-                                    &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_bermakna'] ?? '' ?><br><br>
-                                    - <b>Pembelajaran yang Berkesadaran <i>(Mindful Learning)</i></b><br>
-                                    &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_sadar'] ?? '' ?><br><br>
-                                    - <b>Pembelajaran yang Menyenangkan <i>(Joyful Learning)</i></b><br>
-                                    &nbsp;&nbsp;<?= $rpp['identifikasi']['kebutuhan_senang'] ?? '' ?>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Materi<br>Pelajaran</b></td>
-                            <td style='padding:8px;'>
-                                Pokok materi yang akan dipelajari dalam bab ini:<br>
-                                <?= listToHtml($rpp['identifikasi']['materi_pokok'] ?? []) ?>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Dimensi<br>Profil<br>Lulusan</b></td>
-                            <td style='padding:8px;'>
-                                <?= listToHtml($rpp['identifikasi']['dimensi_profil'] ?? []) ?>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <table style='width:100%; border-collapse:collapse; margin-bottom:20px;' border='1'>
-                        <tr style='background:#f2cd5c;'>
+                        <tr style='background:#e6b847;'>
                             <td colspan='2' style='padding:10px;'><b>B. Desain Pembelajaran</b></td>
                         </tr>
                         <tr>
-                            <td style='width:25%; padding:8px; vertical-align:top;'><b>Capaian<br>Pembelajaran</b></td>
-                            <td style='padding:8px;'><?= $rpp['desain']['capaian'] ?? '' ?></td>
+                            <td style='width:25%; padding:10px; vertical-align:top;'><b>Capaian<br>Pembelajaran</b></td>
+                            <td style='padding:10px; text-align:justify; line-height:1.6;'>
+                                <?= $rpp['desain']['capaian'] ?? '' ?>
+                            </td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Tujuan<br>Pembelajaran</b></td>
-                            <td style='padding:8px;'><?= listToHtml($rpp['desain']['tujuan'] ?? []) ?></td>
+                            <td style='padding:10px; vertical-align:top;'><b>Lintas<br>Disiplin Ilmu</b></td>
+                            <td style='padding:10px; line-height:1.6;'>
+                                <?php
+                                if (isset($rpp['desain']['lintas_disiplin']) && is_array($rpp['desain']['lintas_disiplin'])) {
+                                    foreach ($rpp['desain']['lintas_disiplin'] as $ld) {
+                                        $mapel_ld = is_array($ld) ? ($ld['mapel'] ?? '') : '';
+                                        $kaitan_ld = is_array($ld) ? ($ld['kaitan'] ?? '') : $ld;
+                                        echo "<strong style='display:block;'>" . htmlspecialchars($mapel_ld) . "</strong>";
+                                        echo "<div style='margin-bottom:8px;'>" . htmlspecialchars($kaitan_ld) . "</div>";
+                                    }
+                                } else {
+                                    echo "-";
+                                }
+                                ?>
+                            </td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Topik<br>Pembelajaran</b></td>
-                            <td style='padding:8px;'><?= $material_title ?></td>
+                            <td style='padding:10px; vertical-align:top;'><b>Tujuan<br>Pembelajaran</b></td>
+                            <td style='padding:10px; text-align:justify; line-height:1.6;'>
+                                <?= listToHtml($rpp['desain']['tujuan'] ?? []) ?>
+                            </td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Praktik<br>Pedagogis</b></td>
-                            <td style='padding:8px;'><?= $rpp['desain']['pendekatan_model'] ?? '' ?></td>
+                            <td style='padding:10px; vertical-align:top;'><b>Integrasi Lima Dimensi<br>STEAM</b></td>
+                            <td style='padding:10px; text-align:justify; line-height:1.6;'>
+                                <ul style='margin:0; padding-left:20px;'>
+                                    <?php
+                                    if (isset($rpp['desain']['steam']) && is_array($rpp['desain']['steam'])) {
+                                        foreach ($rpp['desain']['steam'] as $stm) {
+                                            echo "<li style='margin-bottom:5px;'>" . htmlspecialchars($stm) . "</li>";
+                                        }
+                                    } else {
+                                        echo "<li>-</li>";
+                                    }
+                                    ?>
+                                </ul>
+                            </td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Kemitraan<br>Pembelajaran</b></td>
-                            <td style='padding:8px;'><?= $rpp['desain']['kemitraan'] ?? '' ?></td>
+                            <td style='padding:10px; vertical-align:top;'><b>Topik<br>Pembelajaran</b></td>
+                            <td style='padding:10px;'>
+                                <?= $rpp['desain']['topik'] ?? htmlspecialchars($material_title) ?>
+                            </td>
                         </tr>
                         <tr>
-                            <td style='padding:8px; vertical-align:top;'><b>Lingkungan<br>Pembelajaran</b></td>
-                            <td style='padding:8px;'><?= listToHtml($rpp['desain']['lingkungan'] ?? []) ?></td>
+                            <td style='padding:10px; vertical-align:top;'><b>Praktik<br>Pedagogis</b></td>
+                            <td style='padding:10px; line-height:1.6;'>
+                                <b>Pendekatan:</b> Deep Learning<br>
+                                <b>Model:</b> Project Based Learning<br>
+                                <b>Metode:</b> Diskusi, Tanya Jawab
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:10px; vertical-align:top;'><b>Kemitraan<br>Pembelajaran</b></td>
+                            <td style='padding:10px; line-height:1.6;'>
+                                <?= $rpp['desain']['kemitraan'] ?? '' ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:10px; vertical-align:top;'><b>Lingkungan<br>Pembelajaran</b></td>
+                            <td style='padding:10px; line-height:1.6;'>
+                                <ol style='margin:0; padding-left:20px;'>
+                                    <li>Ruang kelas yang nyaman dan kondusif</li>
+                                    <li>Ruang virtual untuk diskusi dan berbagi informasi</li>
+                                    <li>Budaya belajar yang menghargai keragaman dan keunikan</li>
+                                </ol>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:10px; vertical-align:top;'><b>Pemanfaatan<br>Digital</b></td>
+                            <td style='padding:10px; line-height:1.6;'>
+                                <?= listToHtml($rpp['desain']['digital'] ?? []) ?>
+                            </td>
                         </tr>
                     </table>
 
@@ -878,35 +1047,21 @@ function listToHtml($array)
 
                         <tr>
                             <td style='width:25%; padding:8px; vertical-align:top;'><b>Pendahuluan<br>(5-10 menit)</b></td>
-                            <td style='padding:8px; vertical-align:top;'>
-                                <div style="font-weight:bold; margin-bottom:5px;">Orientasi dan Apersepsi Bermakna</div>
-                                <?= listToHtml($rpp['pengalaman']['pendahuluan']['orientasi'] ?? []) ?>
-
-                                <div style="font-weight:bold; margin-top:15px; margin-bottom:5px;">Motivasi yang
-                                    Menggembirakan</div>
-                                <?= listToHtml($rpp['pengalaman']['pendahuluan']['motivasi'] ?? []) ?>
+                            <td style='padding:8px; vertical-align:top; text-align:justify;'>
+                                <?= listToHtml($rpp['pengalaman']['pendahuluan'] ?? []) ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Inti<br>(50 menit)</b></td>
-                            <td style='padding:8px; vertical-align:top;'>
-                                <?php
-                                if (isset($rpp['pengalaman']['inti']) && is_array($rpp['pengalaman']['inti'])) {
-                                    foreach ($rpp['pengalaman']['inti'] as $tahap) {
-                                        echo "<div style='margin-bottom:15px;'>";
-                                        echo "<div style='font-weight:bold; margin-bottom:5px;'>{$tahap['tahap']}</div>";
-                                        echo listToHtml($tahap['kegiatan']);
-                                        echo "</div>";
-                                    }
-                                }
-                                ?>
+                            <td style='padding:8px; vertical-align:top; text-align:justify;'>
+                                <?= listToHtml($rpp['pengalaman']['inti'] ?? []) ?>
                             </td>
                         </tr>
 
                         <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Penutup<br>(10-15 menit)</b></td>
-                            <td style='padding:8px; vertical-align:top;'>
+                            <td style='padding:8px; vertical-align:top; text-align:justify;'>
                                 <?= listToHtml($rpp['pengalaman']['penutup'] ?? []) ?>
                             </td>
                         </tr>
@@ -921,7 +1076,8 @@ function listToHtml($array)
                             <td style='width:25%; padding:8px; vertical-align:top;'><b>Asesmen
                                     pada<br>Awal<br>Pembelajaran</b></td>
                             <td style='padding:8px; vertical-align:top;'>
-                                <b>Tujuan:</b> Mengidentifikasi pengetahuan awal murid tentang <?= $material_title ?>.<br>
+                                <b>Tujuan:</b> Mengidentifikasi pengetahuan awal murid tentang
+                                <?= htmlspecialchars($material_title) ?>.<br>
                                 <b>Bentuk Asesmen:</b> Pertanyaan lisan dan pengamatan sederhana<br>
                                 <b>Pertanyaan:</b><br>
                                 <?= listToHtml($rpp['asesmen']['awal_pertanyaan'] ?? []) ?>
@@ -935,20 +1091,23 @@ function listToHtml($array)
                                     <tr>
                                         <td style='vertical-align:top; width:20%;'>Mahir</td>
                                         <td style='vertical-align:top; text-align:justify;'>
-                                            <?= $rpp['asesmen']['awal_mahir'] ?? '' ?></td>
+                                            <?= $rpp['asesmen']['awal_mahir'] ?? '' ?>
+                                        </td>
                                         <td style='vertical-align:top;'>Diberikan pengayaan dan tantangan lebih kompleks
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style='vertical-align:top;'>Cakap</td>
                                         <td style='vertical-align:top; text-align:justify;'>
-                                            <?= $rpp['asesmen']['awal_cakap'] ?? '' ?></td>
+                                            <?= $rpp['asesmen']['awal_cakap'] ?? '' ?>
+                                        </td>
                                         <td style='vertical-align:top;'>Dilanjutkan ke pembelajaran</td>
                                     </tr>
                                     <tr>
                                         <td style='vertical-align:top;'>Berkembang</td>
                                         <td style='vertical-align:top; text-align:justify;'>
-                                            <?= $rpp['asesmen']['awal_berkembang'] ?? '' ?></td>
+                                            <?= $rpp['asesmen']['awal_berkembang'] ?? '' ?>
+                                        </td>
                                         <td style='vertical-align:top;'>Diberikan bimbingan tambahan dan penguatan konsep
                                         </td>
                                     </tr>
@@ -959,62 +1118,78 @@ function listToHtml($array)
                         <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Asesmen pada<br>Proses<br>Pembelajaran</b></td>
                             <td style='padding:8px; vertical-align:top;'>
-                                <b>Tujuan:</b> Mengukur keterlibatan, kolaborasi, dan kemampuan berpikir kritis murid<br>
+                                <b>Tujuan:</b> Mengukur Kinerja Presentasi & Keterampilan 4C<br>
                                 <b>Bentuk Asesmen:</b> Observasi dan penilaian LKPD<br>
                                 <b>Aspek yang dinilai:</b> Keterlibatan murid, analisis hasil, kerjasama, kemampuan
                                 menyajikan hasil.<br><br>
                                 <b>Tabel Tingkat Keberhasilan</b><br>
                                 <table border='1' style='width:100%; border-collapse:collapse; text-align:left;'>
                                     <tr style='background:#f9f9f9; text-align:center;'>
-                                        <th style="width:15%;">Kriteria<br>Penilaian</th>
-                                        <th>Sangat Baik<br>(4)</th>
-                                        <th>Baik<br>(3)</th>
-                                        <th>Cukup<br>(2)</th>
-                                        <th>Perlu<br>Perbaikan<br>(1)</th>
+                                        <th style="width:20%;">Kriteria 4C</th>
+                                        <th style="width:20%;">Skor 1<br>(Kurang)</th>
+                                        <th style="width:20%;">Skor 2<br>(Cukup)</th>
+                                        <th style="width:20%;">Skor 3<br>(Baik)</th>
+                                        <th style="width:20%;">Skor 4<br>(Sangat Baik)</th>
                                     </tr>
                                     <tr>
-                                        <td style='vertical-align:top;'>Keterlibatan</td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_terlibat'][0] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_terlibat'][1] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_terlibat'][2] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_terlibat'][3] ?? '' ?></td>
+                                        <td style='vertical-align:top;'>Critical Thinking<br>(Analisis Data)</td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_critical'][0] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_critical'][1] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_critical'][2] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_critical'][3] ?? '' ?>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td style='vertical-align:top;'>Analisis hasil</td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_analisis'][0] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_analisis'][1] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_analisis'][2] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_analisis'][3] ?? '' ?></td>
+                                        <td style='vertical-align:top;'>Creativity<br>(Karya & Poster)</td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_creativity'][0] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_creativity'][1] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_creativity'][2] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_creativity'][3] ?? '' ?>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td style='vertical-align:top;'>Kerjasama</td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_kerjasama'][0] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_kerjasama'][1] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_kerjasama'][2] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_kerjasama'][3] ?? '' ?></td>
+                                        <td style='vertical-align:top;'>Collaboration<br>(Kompak & Ta'awun)</td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_collaboration'][0] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_collaboration'][1] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_collaboration'][2] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_collaboration'][3] ?? '' ?>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td style='vertical-align:top;'>Kemampuan<br>menyajikan hasil</td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_saji'][0] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_saji'][1] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_saji'][2] ?? '' ?></td>
-                                        <td style='vertical-align:top; text-align:justify; font-size: 13px; padding:6px;'>
-                                            <?= $rpp['asesmen']['proses_saji'][3] ?? '' ?></td>
+                                        <td style='vertical-align:top;'>Communication<br>(Penyampaian Lisan)</td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_communication'][0] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_communication'][1] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_communication'][2] ?? '' ?>
+                                        </td>
+                                        <td style='vertical-align:top; font-size: 13px; padding:6px; text-align:justify;'>
+                                            <?= $rpp['asesmen']['proses_communication'][3] ?? '' ?>
+                                        </td>
                                     </tr>
                                 </table>
                             </td>
@@ -1023,61 +1198,71 @@ function listToHtml($array)
                         <tr>
                             <td style='padding:8px; vertical-align:top;'><b>Asesmen pada<br>Akhir<br>Pembelajaran</b></td>
                             <td style='padding:8px; vertical-align:top;'>
-                                <b>Tujuan:</b> Mengukur pemahaman murid tentang <?= $material_title ?> setelah
-                                pembelajaran.<br>
+                                <b>Tujuan:</b> Mengukur pemahaman murid tentang
+                                <?= htmlspecialchars($material_title) ?>.<br>
                                 <b>Bentuk Asesmen:</b> Tes Tertulis<br><br>
-                                <div style='text-align:center; font-weight:bold; margin-bottom:5px; text-transform:uppercase;'>RUBRIK PENILAIAN SOAL EVALUASI</div>
-                                <table border='1' style='width:90%; border-collapse:collapse; text-align:center; margin:0 auto; margin-bottom: 20px; font-family: "Times New Roman", Times, serif; font-size: 15px;'>
+                                <div
+                                    style='text-align:center; font-weight:bold; margin-bottom:5px; text-transform:uppercase;'>
+                                    RUBRIK PENILAIAN SOAL EVALUASI</div>
+                                <table border='1'
+                                    style='width:90%; border-collapse:collapse; text-align:center; margin:0 auto; margin-bottom: 20px; font-family: "Times New Roman", Times, serif; font-size: 15px;'>
                                     <tr style='background:#ffff00;'>
-                                        <th colspan='2' style='padding:5px;'>Pilihan Ganda</th>
+                                        <th colspan='3' style='padding:5px;'>Pilihan Ganda</th>
                                     </tr>
                                     <tr>
                                         <th style='padding:5px;'>Nomor Soal</th>
-                                        <th style='padding:5px;'>Bobot Soal</th>
+                                        <th style='padding:5px;'>Nilai Benar</th>
+                                        <th style='padding:5px;'>Nilai Salah</th>
                                     </tr>
                                     <?php
                                     $pg_soals = $rpp['soal_evaluasi']['pilihan_ganda'] ?? [];
                                     $total_pg = count($pg_soals);
+                                    $skor_maks_pg = 0;
                                     if ($total_pg > 0):
-                                        $bobot_pg = round(100 / $total_pg);
+                                        $bobot_pg = 10; // Bobot umum yang digunakan
+                                        $skor_maks_pg = $total_pg * $bobot_pg;
                                         for ($i = 1; $i <= $total_pg; $i++):
                                             ?>
                                             <tr>
                                                 <td style='padding:5px;'><?= $i ?></td>
                                                 <td style='padding:5px;'><?= $bobot_pg ?></td>
+                                                <td style='padding:5px;'>0</td>
                                             </tr>
-                                        <?php
+                                            <?php
                                         endfor;
                                     endif;
                                     ?>
                                     <tr style='background:#f9f9f9;'>
                                         <th style='padding:5px; text-align:left;'>Skor Maksimal PG</th>
-                                        <th style='padding:5px;'>100</th>
+                                        <th colspan='2' style='padding:5px;'><?= $skor_maks_pg ?></th>
                                     </tr>
 
                                     <?php
                                     $uraian_soals = $rpp['soal_evaluasi']['uraian'] ?? [];
                                     $total_uraian = count($uraian_soals);
-                                    if ($total_uraian > 0): 
-                                        $bobot_uraian = round(100 / $total_uraian);
-                                    ?>
-                                    <tr style='background:#ffff00;'>
-                                        <th colspan='2' style='padding:5px;'>Uraian</th>
-                                    </tr>
-                                    <tr>
-                                        <th style='padding:5px;'>Nomor Soal</th>
-                                        <th style='padding:5px;'>Bobot Soal</th>
-                                    </tr>
-                                    <?php for ($i = 1; $i <= $total_uraian; $i++): ?>
+                                    if ($total_uraian > 0):
+                                        $bobot_uraian = 20; // Contoh bobot untuk soal essay
+                                        $skor_maks_uraian = $total_uraian * $bobot_uraian;
+                                        ?>
+                                        <tr style='background:#ffff00;'>
+                                            <th colspan='3' style='padding:5px;'>Uraian</th>
+                                        </tr>
+                                        <tr>
+                                            <th style='padding:5px;'>Nomor Soal</th>
+                                            <th style='padding:5px;'>Nilai Benar</th>
+                                            <th style='padding:5px;'>Nilai Salah</th>
+                                        </tr>
+                                        <?php for ($i = 1; $i <= $total_uraian; $i++): ?>
                                             <tr>
                                                 <td style='padding:5px;'><?= $i ?></td>
                                                 <td style='padding:5px; font-weight:bold;'><?= $bobot_uraian ?></td>
+                                                <td style='padding:5px;'>0</td>
                                             </tr>
-                                    <?php endfor; ?>
-                                    <tr style='background:#f9f9f9;'>
-                                        <th style='padding:5px; text-align:left;'>Skor Maksimal Uraian</th>
-                                        <th style='padding:5px;'>100</th>
-                                    </tr>
+                                        <?php endfor; ?>
+                                        <tr style='background:#f9f9f9;'>
+                                            <th style='padding:5px; text-align:left;'>Skor Maksimal Uraian</th>
+                                            <th colspan='2' style='padding:5px;'><?= $skor_maks_uraian ?></th>
+                                        </tr>
                                     <?php endif; ?>
                                 </table>
                             </td>
@@ -1180,7 +1365,7 @@ function listToHtml($array)
                                 $current_level_pg = ""; // Variabel tracker kognitif
                                 foreach ($rpp['soal_evaluasi']['pilihan_ganda'] as $soal) {
                                     $level_kognitif = $soal['level_kognitif'] ?? '';
-                                    
+
                                     // Pengecekan jika level kognitif berubah, buat baris pemisah (separator)
                                     if (!empty($level_kognitif) && $level_kognitif !== $current_level_pg) {
                                         echo "<tr><td colspan='7' style='padding:8px 15px; font-weight:bold; background-color:#f8f9fa; border-top:2px solid #555; text-align:left;'>{$level_kognitif}</td></tr>";
@@ -1210,20 +1395,20 @@ function listToHtml($array)
 
                         <!-- TABEL KISI-KISI URAIAN JIKA ADA -->
                         <?php if (isset($rpp['soal_evaluasi']['uraian']) && is_array($rpp['soal_evaluasi']['uraian']) && count($rpp['soal_evaluasi']['uraian']) > 0): ?>
-                        <table style='width:100%; border-collapse:collapse; margin-bottom:30px; font-size:14px;' border='1'>
-                            <tr style='background:#d4edda;'>
-                                <td colspan='7' style='padding:10px;'><b>KARTU SOAL URAIAN / ESSAY</b></td>
-                            </tr>
-                            <tr style='background:#f9f9f9; text-align:center;'>
-                                <th>No</th>
-                                <th>Kompetensi Dasar</th>
-                                <th>Indikator</th>
-                                <th>Jenis Soal</th>
-                                <th>Nomor Soal</th>
-                                <th>Soal</th>
-                                <th>Kunci & Rubrik</th>
-                            </tr>
-                            <?php
+                            <table style='width:100%; border-collapse:collapse; margin-bottom:30px; font-size:14px;' border='1'>
+                                <tr style='background:#d4edda;'>
+                                    <td colspan='7' style='padding:10px;'><b>KARTU SOAL URAIAN / ESSAY</b></td>
+                                </tr>
+                                <tr style='background:#f9f9f9; text-align:center;'>
+                                    <th>No</th>
+                                    <th>Kompetensi Dasar</th>
+                                    <th>Indikator</th>
+                                    <th>Jenis Soal</th>
+                                    <th>Nomor Soal</th>
+                                    <th>Soal</th>
+                                    <th>Kunci & Rubrik</th>
+                                </tr>
+                                <?php
                                 $idx_uraian = 1;
                                 $current_level_uraian = ""; // Variabel tracker kognitif
                                 foreach ($rpp['soal_evaluasi']['uraian'] as $soal) {
@@ -1252,14 +1437,17 @@ function listToHtml($array)
                                     echo "</tr>";
                                     $idx_uraian++;
                                 }
-                            ?>
-                        </table>
+                                ?>
+                            </table>
                         <?php endif; ?>
 
                         <div style="border: 2px dashed #94a3b8; padding: 30px; border-radius: 8px; background: #f8fafc;">
-                            <h4 style="text-align:center; font-weight:bold; margin-bottom:10px; color: #334155;">LEMBAR SOAL EVALUASI</h4>
-                            
-                            <h5 style="margin-top: 20px; color: #1e293b; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">A. Pilihan Ganda</h5>
+                            <h4 style="text-align:center; font-weight:bold; margin-bottom:10px; color: #334155;">LEMBAR SOAL
+                                EVALUASI</h4>
+
+                            <h5
+                                style="margin-top: 20px; color: #1e293b; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">
+                                A. Pilihan Ganda</h5>
                             <?php
                             if (isset($rpp['soal_evaluasi']['pilihan_ganda']) && is_array($rpp['soal_evaluasi']['pilihan_ganda'])) {
                                 $idx = 1;
@@ -1274,8 +1462,10 @@ function listToHtml($array)
                             ?>
 
                             <?php if (isset($rpp['soal_evaluasi']['uraian']) && is_array($rpp['soal_evaluasi']['uraian']) && count($rpp['soal_evaluasi']['uraian']) > 0): ?>
-                            <h5 style="margin-top: 40px; color: #1e293b; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">B. Uraian / Essay</h5>
-                            <?php
+                                <h5
+                                    style="margin-top: 40px; color: #1e293b; font-weight: bold; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px;">
+                                    B. Uraian / Essay</h5>
+                                <?php
                                 $idx = 1;
                                 foreach ($rpp['soal_evaluasi']['uraian'] as $soal) {
                                     $soal_teks = $soal['soal'] ?? '';
@@ -1285,7 +1475,7 @@ function listToHtml($array)
                                     echo "</div>";
                                     $idx++;
                                 }
-                            ?>
+                                ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -1293,90 +1483,104 @@ function listToHtml($array)
                     <!-- G. LAMPIRAN LKPD (Manual Break) -->
                     <div class="manual-page-break" contenteditable="false"></div>
 
-                    <div
-                        style='border:4px solid #00bcd4; border-radius:15px; padding:25px; margin-bottom:20px; background-color: #f4fcff;'>
+                    <!-- STRUKTUR BARU LKPD MENGIKUTI REFERENSI -->
+                    <div class='cegah-potong'
+                        style='border:2px solid #00bcd4; padding:25px; margin-bottom:20px; background-color: #fff;'>
                         <h3
-                            style='text-align:center; color:#007b83; font-weight: 900; font-size: 24px; text-transform: uppercase;'>
-                            LEMBAR KERJA PESERTA DIDIK (LKPD)</h3>
+                            style='text-align:center; color:#007b83; font-weight: 900; font-size: 18px; text-transform: uppercase;'>
+                            <?= $rpp['lkpd']['judul_lkpd'] ?? 'LEMBAR KERJA PESERTA DIDIK (LKPD)' ?>
+                        </h3>
 
-                        <!-- TAHAP 1 -->
-                        <div class='cegah-potong'
-                            style="margin-top: 50px; margin-bottom: 40px; border: 4px solid #52c2d6; border-radius: 20px; padding: 50px 30px 25px 30px; position: relative; background: white; box-shadow: 6px 6px 0px rgba(82, 194, 214, 0.3);">
-                            <div
-                                style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); border: 3px solid #222; border-radius: 30px; background: white; box-shadow: 4px 4px 0px #222; padding: 8px 35px; text-align: center; z-index: 2; min-width: 280px;">
-                                <b style="font-size: 16px; color: #222; display: block; line-height: 1.4;">Tahap
-                                    1<br>Menentukan Pertanyaan Mendasar</b>
-                            </div>
-                            <div style="font-size: 15px; color: #333; line-height: 1.6; text-align: justify;">
-                                <b style="color: #007b83;">Perhatikan studi kasus / narasi berikut:</b><br><br>
-                                <?= $rpp['lkpd']['tahap1'] ?? '' ?>
-                            </div>
+                        <table style='width:100%; border:none; margin-bottom:25px; margin-top:20px;'>
+                            <tr>
+                                <td style='width:150px; padding: 4px 0; border:none;'>Kelas</td>
+                                <td style='padding: 4px 0; border:none;'>:
+                                    ..................................................................................</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 4px 0; border:none;'>Kelompok</td>
+                                <td style='padding: 4px 0; border:none;'>:
+                                    ..................................................................................</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 4px 0; border:none;'>Ketua Kelompok</td>
+                                <td style='padding: 4px 0; border:none;'>:
+                                    ..................................................................................</td>
+                            </tr>
+                        </table>
+
+                        <!-- Aktivitas 1 -->
+                        <div style='margin-bottom:25px;'>
+                            <b
+                                style='font-size:15px;'><?= $rpp['lkpd']['aktivitas1']['judul'] ?? 'Aktivitas 1: Uji Kinerja' ?></b><br>
+                            <span
+                                style='font-size:14px;'><?= $rpp['lkpd']['aktivitas1']['instruksi'] ?? 'Lakukan pengamatan dan catat hasilnya pada tabel berikut:' ?></span><br>
+
+                            <table border='1' style='width:100%; border-collapse:collapse; margin-top:10px;'>
+                                <tr style='background:#1e3a8a; color:white;'>
+                                    <th style='padding:8px; width:10%; text-align:center;'>No</th>
+                                    <th style='padding:8px; width:45%;'>Parameter Pengujian</th>
+                                    <th style='padding:8px; width:45%;'>Hasil Pengamatan Kelompok</th>
+                                </tr>
+                                <?php
+                                if (isset($rpp['lkpd']['aktivitas1']['tabel_parameter']) && is_array($rpp['lkpd']['aktivitas1']['tabel_parameter'])) {
+                                    $no = 1;
+                                    foreach ($rpp['lkpd']['aktivitas1']['tabel_parameter'] as $param) {
+                                        echo "<tr>
+                                                <td style='padding:12px 8px; text-align:center;'>$no</td>
+                                                <td style='padding:12px 8px;'>" . htmlspecialchars($param) . "</td>
+                                                <td style='padding:12px 8px; color:#aaa; text-align:center;'>........................................................</td>
+                                              </tr>";
+                                        $no++;
+                                    }
+                                }
+                                ?>
+                            </table>
                         </div>
 
-                        <!-- TAHAP 2 -->
-                        <div class='cegah-potong'
-                            style="margin-top: 50px; margin-bottom: 40px; border: 4px solid #52c2d6; border-radius: 20px; padding: 50px 30px 25px 30px; position: relative; background: white; box-shadow: 6px 6px 0px rgba(82, 194, 214, 0.3);">
-                            <div
-                                style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); border: 3px solid #222; border-radius: 30px; background: white; box-shadow: 4px 4px 0px #222; padding: 8px 35px; text-align: center; z-index: 2; min-width: 280px;">
-                                <b style="font-size: 16px; color: #222; display: block; line-height: 1.4;">Tahap
-                                    2<br>Mengorganisasikan Belajar</b>
-                            </div>
-                            <div style="font-size: 15px; color: #333; line-height: 1.6;">
-                                <ul style="margin: 0; padding-left: 20px; font-weight: 500;">
-                                    <li style="margin-bottom: 8px;">Duduklah berdasarkan kelompok yang sudah ditentukan!
-                                    </li>
-                                    <li style="margin-bottom: 8px;">Dengarkan arahan guru tentang aturan dalam diskusi
-                                        kelompok!</li>
-                                    <li>Setelah mendapatkan LKPD, diskusikan tugas ini bersama rekan sekelompokmu dengan
-                                        penuh tanggung jawab!</li>
-                                </ul>
-                            </div>
+                        <!-- Aktivitas 2 -->
+                        <div style='margin-bottom:25px;'>
+                            <b style='font-size:15px;'>Aktivitas 2: Analisis Perbaikan Alat / Evaluasi (Fase EDP:
+                                IMPROVE)</b><br>
+                            <?php
+                            if (isset($rpp['lkpd']['aktivitas2_pertanyaan']) && is_array($rpp['lkpd']['aktivitas2_pertanyaan'])) {
+                                foreach ($rpp['lkpd']['aktivitas2_pertanyaan'] as $tanya) {
+                                    echo "<div style='margin-top:10px; font-size:14px;'>" . htmlspecialchars($tanya) . "<br><span style='color:#555;'><i>Jawaban:<br>.........................................................................................................................................................................<br>.........................................................................................................................................................................</i></span></div>";
+                                }
+                            }
+                            ?>
                         </div>
 
-                        <!-- TAHAP 3 & 4 -->
-                        <div class='cegah-potong'
-                            style="margin-top: 50px; margin-bottom: 40px; border: 4px solid #52c2d6; border-radius: 20px; padding: 50px 30px 25px 30px; position: relative; background: white; box-shadow: 6px 6px 0px rgba(82, 194, 214, 0.3);">
-                            <div
-                                style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); border: 3px solid #222; border-radius: 30px; background: white; box-shadow: 4px 4px 0px #222; padding: 8px 35px; text-align: center; z-index: 2; min-width: 280px;">
-                                <b style="font-size: 16px; color: #222; display: block; line-height: 1.4;">Tahap 3 &
-                                    4<br>Penyelidikan & Menyajikan Hasil</b>
-                            </div>
-                            <div style="font-size: 15px; color: #333; line-height: 1.6;">
-                                <b style="color: #007b83;">Jawablah pertanyaan diskusi berikut secara berkelompok untuk
-                                    memecahkan kasus di atas!</b><br><br>
-                                <?= $rpp['lkpd']['tahap3'] ?? '' ?>
-
-                                <div
-                                    style="margin-top: 25px; border: 2px dashed #a0d8e4; border-radius: 15px; padding: 20px; min-height: 250px; background: #fafafa;">
-                                    <span style="color: #aaa; font-style: italic;">(Ruang untuk siswa menulis lembar jawaban
-                                        hasil diskusi)</span>
-                                </div>
-
-                                <div style="text-align: center; margin-top: 25px;">
-                                    <div
-                                        style="display: inline-block; border: 2px solid #52c2d6; border-radius: 25px; padding: 10px 25px; background: #e6f7ff; color: #007b83; font-weight: bold; font-size: 14px;">
-                                        📢 Apabila sudah menjawab semua pertanyaan, presentasikan temuanmu di depan kelas!
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- Aktivitas 3 -->
+                        <div style='margin-bottom:25px;'>
+                            <b
+                                style='font-size:15px;'><?= $rpp['lkpd']['aktivitas3']['judul'] ?? 'Aktivitas 3: Refleksi Spiritual' ?></b><br>
+                            <span style='font-size:14px;'>
+                                Bacalah <b><?= $rpp['lkpd']['aktivitas3']['ayat'] ?? 'Ayat Al-Qur\'an terkait' ?></b>.
+                                Renungkanlah:<br>
+                                <?= $rpp['lkpd']['aktivitas3']['narasi'] ?? 'Narasi refleksi' ?><br>
+                                <span style='color:#555;'><i>Ungkapan Rasa Syukur Kelompok
+                                        Kami:<br>.........................................................................................................................................................................<br>.........................................................................................................................................................................</i></span>
+                            </span>
                         </div>
 
-                        <!-- TAHAP 5 -->
-                        <div class='cegah-potong'
-                            style="margin-top: 50px; margin-bottom: 40px; border: 4px solid #52c2d6; border-radius: 20px; padding: 50px 30px 25px 30px; position: relative; background: white; box-shadow: 6px 6px 0px rgba(82, 194, 214, 0.3);">
-                            <div
-                                style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); border: 3px solid #222; border-radius: 30px; background: white; box-shadow: 4px 4px 0px #222; padding: 8px 35px; text-align: center; z-index: 2; min-width: 280px;">
-                                <b style="font-size: 16px; color: #222; display: block; line-height: 1.4;">Tahap
-                                    5<br>Menganalisis dan Mengevaluasi</b>
+                        <!-- Aktivitas 4 -->
+                        <div style='margin-bottom:25px;'>
+                            <b
+                                style='font-size:15px;'><?= $rpp['lkpd']['aktivitas4']['judul'] ?? 'Aktivitas 4: Ikrar Aksi Adab (Fase 4)' ?></b><br>
+                            <span
+                                style='font-size:14px;'><?= $rpp['lkpd']['aktivitas4']['instruksi_ikrar'] ?? 'Tuliskan 3 komitmen nyata adab:' ?></span><br>
+                            <div style='margin-top:5px; font-size:14px; color:#555; line-height:2;'>
+                                <i>1. Komitmen 1:
+                                    .....................................................................................................................................<br>
+                                    2. Komitmen 2:
+                                    .....................................................................................................................................<br>
+                                    3. Komitmen 3:
+                                    .....................................................................................................................................</i>
                             </div>
-                            <div style="font-size: 15px; color: #333; line-height: 1.6;">
-                                <b style="color: #007b83;">Setelah melaksanakan presentasi, mari merenung sejenak dan
-                                    simpulkan hasil belajarmu hari ini:</b><br><br>
-                                <?= $rpp['lkpd']['tahap5'] ?? '' ?>
-                            </div>
-
-                            <div style="text-align: center; margin-top: 30px; font-size: 45px;">
-                                👨‍🏫 👩‍🏫 📚 ✏️
+                            <div style='margin-top:15px; font-size:14px;'>
+                                <b>Slogan Kami:</b>
+                                "..........................................................................................................................................."
                             </div>
                         </div>
                     </div>
@@ -1398,7 +1602,8 @@ function listToHtml($array)
 
                         <div style="position: relative; z-index: 10;">
                             <h1 style="color: #005f73; font-size: 28px; margin-bottom: 20px; font-weight: 900;">Apa itu
-                                <?= $material_title ?>?</h1>
+                                <?= $material_title ?>?
+                            </h1>
 
                             <div
                                 style="color: #444; font-size: 16px; line-height: 1.8; margin-bottom: 30px; text-align: justify;">
@@ -1440,7 +1645,8 @@ function listToHtml($array)
                         <div style="position: absolute; top: -15px; right: -15px; font-size: 80px; opacity: 0.8;">☀️</div>
 
                         <h2 style="color: #005f73; font-size: 26px; margin-bottom: 20px; font-weight: 900;">Manfaat
-                            <?= $material_title ?></h2>
+                            <?= $material_title ?>
+                        </h2>
                         <div style="margin-bottom: 40px;">
                             <?php
                             if (isset($rpp['bahan_ajar']['manfaat'])) {
